@@ -7,7 +7,7 @@ library(shiny)
 library(shinydashboard)
 library(ggplot2)
 
-# Read my dataset
+# Read your dataset
 my_data <- read.csv("https://raw.githubusercontent.com/SarahBauhofer/Dashboard/main/StudentsPerformance-3.csv")
 
 # Remove "lunch" and "race/ethnicity" columns
@@ -26,14 +26,14 @@ ui <- dashboardPage(
 
 # Define server logic
 server <- function(input, output) {
-  # Display the dataset in a table
+  # Display the modified dataset in a table
   output$table <- renderDataTable({
     my_data
   })
   
-  # Create a scatterplot using the first two numeric columns
+  # Create a scatterplot using the first two columns
   output$scatterplot <- renderPlot({
-    ggplot(my_data, aes(x = my_data[[1]], y = my_data[[2]])) +
+    ggplot(my_data, aes(x = my_data[, 1], y = my_data[, 2])) +
       geom_point() +
       labs(title = "Scatterplot")
   })
