@@ -5,6 +5,7 @@ install_if_missing <- function(package) {
       stop("Package installation failed: ", package)
     }
   }
+    library(package, character.only = TRUE)
 }
 
 # Install and load necessary libraries
@@ -48,6 +49,8 @@ ui <- dashboardPage(
       
       tabItem(tabName = "dashboardTab",
               fluidRow(
+                # Table
+                column(12, dataTableOutput("average_scores_table")),
                 # Scatterplot
                 column(6,
                        plotOutput("scatterplot")
@@ -68,13 +71,12 @@ ui <- dashboardPage(
                        plotOutput("scatterplot_test_prep_math"),
                        plotOutput("scatterplot_test_prep_reading"),
                        plotOutput("scatterplot_test_prep_writing")
-                )
-              )
+                ),
       )
     )
   )
 )
-
+)
 
 # Define server logic
 server <- function(input, output) {
@@ -141,6 +143,28 @@ server <- function(input, output) {
       theme_minimal() +
       labs(x = "Test Preparation Course", y = "Writing Score")
   })
+  
+  # Table with average scores and number of students
+  output$average_scores_table <- renderDataTable({
+    
+    # Calculate average scores
+    avg_scores <- colMeans(StudentsPerformance_3[, c("math.score", "reading.score", "writing.score")])
+    
+    # Calculate the number of students by gender
+    num_students <- table(StudentsPerformance_3$gender)
+    
+    # Create a data frame for the table
+    table_data <- data.frame(
+      Subject = c("Math", "Reading", "Writing"),
+      Average_Score = avg_scores,
+      Num_Students = c(num_students["male"], num_students["female"], sum(num_students))
+    )
+    # Calculate the total for each row and add a Total column
+    StudentsPerformance_3$Total <- rowSums(StudentsPerformance_3[, c("math.score", "reading.score", "writing.score")])
+   
+     # Return the data frame for rendering the table
+    table_data
+  }, options = list(paging = FALSE, searching = FALSE))
   
 }
 
