@@ -32,9 +32,12 @@ StudentsPerformance_3 <- read.csv("https://raw.githubusercontent.com/SarahBauhof
 # Remove "lunch" and "race/ethnicity" columns
 StudentsPerformance_3 <- StudentsPerformance_3[, !(names(StudentsPerformance_3) %in% c("lunch", "race.ethnicity"))]
 
-# Convert 'parental.level.of.education' to a factor with a specific order
-degree_order <- c("some high school", "high school", "some college", "associate's degree", "bachelor's degree", "master's degree")
-StudentsPerformance_3$parental.level.of.education <- factor(StudentsPerformance_3$parental.level.of.education, levels = degree_order, ordered = TRUE)
+# Add columns for math, writing, and reading
+passing_threshold <- 50
+StudentsPerformance_3$math_pass_fail <- ifelse(StudentsPerformance_3$math.score >= passing_threshold, "Pass", "Fail")
+StudentsPerformance_3$writing_pass_fail <- ifelse(StudentsPerformance_3$writing.score >= passing_threshold, "Pass", "Fail")
+StudentsPerformance_3$reading_pass_fail <- ifelse(StudentsPerformance_3$reading.score >= passing_threshold, "Pass", "Fail")
+
 
 # Define UI
 ui <- dashboardPage(
@@ -48,19 +51,17 @@ ui <- dashboardPage(
     tabItems(
       tabItem(tabName = "dashboardTab",
               fluidRow(
-                # Scatterplots
+                # Pass/Fail Rate Bar Chart based on Test Preparation Course - Math
                 column(4,
-                       box(title = "Scatterplot - Math Score", width = 12, plotlyOutput("scatterplot_test_prep_math"))
+                       box(width = 12, plotlyOutput("bar_chart_test_prep_math"))
                 ),
+                # Pass/Fail Rate Bar Chart based on Test Preparation Course - Reading
                 column(4,
-                       box(title = "Scatterplot - Reading Score", width = 12, plotlyOutput("scatterplot_test_prep_reading"))
+                       box(width = 12, plotlyOutput("bar_chart_test_prep_reading"))
                 ),
+                # Pass/Fail Rate Bar Chart based on Test Preparation Course - Writing
                 column(4,
-                       box(title = "Scatterplot - Writing Score", width = 12, plotlyOutput("scatterplot_test_prep_writing"))
-                ),
-                # Pass/Fail Rate Bar Chart based on Test Preparation Course
-                column(6,
-                       box(title = "Pass/Fail Rate", width = 12, plotlyOutput("pass_fail_rate"))
+                       box(width = 12, plotlyOutput("bar_chart_test_prep_writing"))
                 )
               )
       )
@@ -75,80 +76,37 @@ server <- function(input, output) {
   StudentsPerformance_3$overall_score <- rowSums(StudentsPerformance_3[, c("math.score", "reading.score", "writing.score")])
   StudentsPerformance_3$pass_fail <- ifelse(StudentsPerformance_3$overall_score >= 150, "Pass", "Fail")
   
-  output$groupedBoxplot <- renderPlotly({
-    p <- ggplot(StudentsPerformance_3, aes(x = `parental.level.of.education`, y = math.score)) +
-      geom_boxplot(aes(fill = "Math"), position = position_dodge(width = 0.8), width = 0.7) +
-      geom_boxplot(aes(y = reading.score, fill = "Reading"), position = position_dodge(width = 0.8), width = 0.7) +
-      geom_boxplot(aes(y = writing.score, fill = "Writing"), position = position_dodge(width = 0.8), width = 0.7) +
-      labs(title = "Grouped Boxplot - Average Scores by Parental Level of Education",
-           x = "Parental Level of Education", y = "Score") +
-      theme_minimal() +
-      scale_fill_manual(values = c("Math" = "skyblue", "Reading" = "lightgreen", "Writing" = "lightcoral"))
-    
-    ggplotly(p)
-  })
-  
-  # Calculate average scores for filtered data
-  avg_scores <- colMeans(StudentsPerformance_3[, c("math.score", "reading.score", "writing.score")])
-  
-  # Average Scores Bar Chart
-  output$average_scores <- renderPlotly({
-    bar_data <- data.frame(
-      subject = rep(c("Math", "Reading", "Writing"), each = 2),
-      gender = rep(c("Male", "Female"), times = 3),
-      value = rep(avg_scores, times = 2)
-    )
-    
-    p <- ggplot(bar_data, aes(x = subject, y = value, fill = gender)) +
-      geom_bar(stat = "identity", position = "dodge") +
-      labs(title = "Average Scores by Subject and Gender", x = "Subject", y = "Average Score") +
-      theme_minimal()
-    
-    ggplotly(p)
-  })
-  
-  # Test Preparation Scatterplots
-  render_test_prep_scatterplot <- function(subject) {
-    p <- ggplot(StudentsPerformance_3, aes(x = test.preparation.course, y = !!sym(subject), color = pass_fail)) +
-      geom_point() +
-      ggtitle(paste("Scatterplot - Test Preparation and", subject)) +
-      theme_minimal() +
-      labs(x = "Test Preparation Course", y = paste(subject), color = "Pass/Fail Status")
-    
-    ggplotly(p)
-  }
-  
-  output$scatterplot_test_prep_math <- renderPlotly({
-    render_test_prep_scatterplot("math.score")
-  })
-  
-  output$scatterplot_test_prep_reading <- renderPlotly({
-    render_test_prep_scatterplot("reading.score")
-  })
-  
-  output$scatterplot_test_prep_writing <- renderPlotly({
-    render_test_prep_scatterplot("writing.score")
-  })
-  
-  # Pass/Fail Rate Bar Chart
-  output$pass_fail_rate <- renderPlotly({
-    pass_fail_data <- table(StudentsPerformance_3$test.preparation.course, StudentsPerformance_3$pass_fail)
+  # Test Preparation Bar Charts
+  render_test_prep_bar_chart <- function(subject) {
+    pass_fail_data <- table(StudentsPerformance_3$test.preparation.course, StudentsPerformance_3[[paste0(tolower(subject), "_pass_fail")]])
     
     pass_fail_df <- as.data.frame(pass_fail_data)
     names(pass_fail_df) <- c("Test Preparation Course", "Pass/Fail", "Count")
     
-    # Calculate percentages
+    # Calculate fail percentages only
     pass_fail_df$Percentage <- ifelse(pass_fail_df$`Pass/Fail` == "Fail", 
                                       (pass_fail_df$Count / sum(pass_fail_df$Count)) * 100, 0)
     
     p <- ggplot(pass_fail_df, aes(x = `Test Preparation Course`, y = Percentage, fill = `Pass/Fail`)) +
       geom_bar(stat = "identity", position = "dodge") +
-      labs(title = "Percentage of Participants who Failed based on Test Preparation Course", 
-           x = "Test Preparation Course", y = "Percentage") +
+      labs(title = paste("Fail Rate based on Test Preparation Course -", subject), 
+           x = "Test Preparation Course", y = "Fail Rate (%)") +
       theme_minimal() +
-      scale_fill_manual(values = c("Pass" = "#4CAF50", "Fail" = "red"))  # Different shade of green
+      guides(fill = FALSE)  # Remove the legend
     
-    ggplotly(p)  # Convert ggplot to plotly
+    ggplotly(p, tooltip = "text")  # Convert ggplot to plotly and add tooltip
+  }
+  
+  output$bar_chart_test_prep_math <- renderPlotly({
+    render_test_prep_bar_chart("Math")
+  })
+  
+  output$bar_chart_test_prep_reading <- renderPlotly({
+    render_test_prep_bar_chart("Reading")
+  })
+  
+  output$bar_chart_test_prep_writing <- renderPlotly({
+    render_test_prep_bar_chart("Writing")
   })
 }
 
