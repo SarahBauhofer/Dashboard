@@ -1,7 +1,4 @@
-#only the Students performance based on if they attended the preparation course or not.
-#also is the difference between the Bars shown
-
-# Install and load necessary libraries outside of the Shiny app script
+#Install and load necessary libraries outside of the Shiny app script
 packages <- c("shiny", "shinydashboard", "ggplot2", "corrplot", "reshape2", "plotly")
 
 install_if_missing <- function(package) {
@@ -86,36 +83,39 @@ server <- function(input, output) {
     filtered_data <- subset(StudentsPerformance_3, 
                             test.preparation.course %in% c("none", "completed") & 
                               parental.level.of.education == selected_education &
-                              !is.na(paste0(tolower(subject), "_pass_fail")))
+                              !is.na(StudentsPerformance_3[[paste0(tolower(subject), "_pass_fail")]]))
     
     # Calculate the fail proportions
     fail_proportions <- prop.table(table(filtered_data$test.preparation.course, filtered_data[[paste0(tolower(subject), "_pass_fail")]]), 2)[,"Fail"]
+    
+    # Convert proportions to percentages
+    fail_proportions <- fail_proportions * 100
     
     # Round the proportions to two decimal places
     rounded_proportions <- round(fail_proportions, 2)
     
     # Calculate the difference between the two bars
-    difference <- fail_proportions["none"] - fail_proportions["completed"]
+    difference <- fail_proportions["completed"] - fail_proportions["none"]
     
     # Identify the lower and higher values for the bars
     lower_value <- min(fail_proportions)
     higher_value <- max(fail_proportions)
     
-    # Generate the bar chart
-    p <- ggplot(data.frame(Pass_Fail = names(fail_proportions), Proportion = fail_proportions), 
-                aes(x = Pass_Fail, y = Proportion, fill = Pass_Fail)) +
-      geom_bar(stat = "identity", position = "dodge") +
-      geom_segment(aes(x = 1.25, xend = 1.75, y = lower_value, yend = higher_value),
-                   arrow = arrow(type = "closed", angle = 20, length = unit(0.1, "inches")), color = "black", size = 0.5) +
-      geom_text(aes(x = 1.5, y = mean(fail_proportions), label = sprintf("%.2f", difference)),
-                color = "black", size = 4, vjust = 0.5, hjust = -0.5) +
-      labs(title = paste("Fail Rate -", subject, "-", selected_education), 
-           x = "Test Preparation Course", y = "Fail Rate (Proportion)") +
-      theme_minimal() +
-      guides(fill = FALSE) +  # Remove the legend
-      scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, by = 0.2))  # Adjust y-axis limits and breaks
+    # Calculate the position of the connecting line dynamically
+    line_position <- mean(c(lower_value, higher_value))
     
-    ggplotly(p)  # Convert ggplot to plotly without tooltip
+    p <- ggplot(data.frame(Pass_Fail = names(fail_proportions), Proportion = fail_proportions), 
+                aes(x = Pass_Fail, y = Proportion, fill = "gray")) +
+      geom_bar(stat = "identity", position = "dodge", fill = "gray") +
+      annotate("segment", x = 1.25, xend = 1.75, y = lower_value, yend = higher_value,
+               line = arrow(type = "closed", angle = 20, length = unit(0.1, "inches")), size = 0.5) +
+      geom_text(aes(x = 1.5, y = line_position, label = sprintf("%.2f", difference)),
+                size = 4, vjust = 0.5, hjust = -0.5) +
+      labs(title = paste(subject, "-", selected_education), 
+           x = "Test Preparation Course", y = "Fail Rate (%)") +
+      theme_minimal() +
+      guides(fill = "none") +  # Remove the legend
+      scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 20))  # Adjust y-axis limits and breaks
   }
   
   # Render the subject fail rate charts
@@ -134,5 +134,3 @@ server <- function(input, output) {
 
 # Run the application
 shinyApp(ui, server)
-
-
