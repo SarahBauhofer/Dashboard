@@ -1,0 +1,138 @@
+#only the Students performance based on if they attended the preparation course or not.
+#also is the difference between the Bars shown
+
+# Install and load necessary libraries outside of the Shiny app script
+packages <- c("shiny", "shinydashboard", "ggplot2", "corrplot", "reshape2", "plotly")
+
+install_if_missing <- function(package) {
+  if (!require(package, character.only = TRUE)) {
+    install.packages(package, dependencies = TRUE)
+    if (!require(package, character.only = TRUE)) {
+      stop("Package installation failed: ", package)
+    }
+  }
+  library(package, character.only = TRUE)
+}
+
+lapply(packages, install_if_missing)
+
+# The Shiny app script starts here
+
+library(shiny)
+library(shinydashboard)
+library(ggplot2)
+library(corrplot)
+library(reshape2)
+library(plotly)
+
+# Read your dataset
+StudentsPerformance_3 <- read.csv("https://raw.githubusercontent.com/SarahBauhofer/Dashboard/main/StudentsPerformance-3.csv")
+
+# Remove "lunch" and "race/ethnicity" columns
+StudentsPerformance_3 <- StudentsPerformance_3[, !(names(StudentsPerformance_3) %in% c("lunch", "race.ethnicity"))]
+
+# Add columns for math, writing, and reading
+passing_threshold <- 50
+StudentsPerformance_3$math_pass_fail <- ifelse(StudentsPerformance_3$math.score >= passing_threshold, "Pass", "Fail")
+StudentsPerformance_3$writing_pass_fail <- ifelse(StudentsPerformance_3$writing.score >= passing_threshold, "Pass", "Fail")
+StudentsPerformance_3$reading_pass_fail <- ifelse(StudentsPerformance_3$reading.score >= passing_threshold, "Pass", "Fail")
+
+# Define UI
+ui <- dashboardPage(
+  dashboardHeader(title = "Students Performance Dashboard"),
+  dashboardSidebar(
+    sidebarMenu(
+      menuItem("Dashboard", tabName = "dashboardTab")
+    )
+  ),
+  dashboardBody(
+    tabItems(
+      tabItem(tabName = "dashboardTab",
+              fluidRow(
+                # Select Education Level Dropdown
+                column(3,
+                       selectInput("education_dropdown", "Select Education Level", 
+                                   choices = unique(StudentsPerformance_3$parental.level.of.education),
+                                   selected = NULL)
+                ),
+                # Pass/Fail Rate Bar Chart based on Test Preparation Course - Math
+                column(4,
+                       box(width = 12, plotlyOutput("bar_chart_test_prep_math"))
+                ),
+                # Pass/Fail Rate Bar Chart based on Test Preparation Course - Reading
+                column(4,
+                       box(width = 12, plotlyOutput("bar_chart_test_prep_reading"))
+                ),
+                # Pass/Fail Rate Bar Chart based on Test Preparation Course - Writing
+                column(4,
+                       box(width = 12, plotlyOutput("bar_chart_test_prep_writing"))
+                )
+              )
+      )
+    )
+  )
+)
+
+# Define server logic
+server <- function(input, output) {
+  
+  # Add Pass/Fail Status and Overall Score to the dataset
+  StudentsPerformance_3$overall_score <- rowSums(StudentsPerformance_3[, c("math.score", "reading.score", "writing.score")])
+  StudentsPerformance_3$pass_fail <- ifelse(StudentsPerformance_3$overall_score >= 150, "Pass", "Fail")
+  
+  # Function to calculate fail rate and generate bar chart
+  render_subject_fail_rate_chart <- function(subject, selected_education) {
+    # Filter the dataset for the selected subject, education level, and both preparation courses
+    filtered_data <- subset(StudentsPerformance_3, 
+                            test.preparation.course %in% c("none", "completed") & 
+                              parental.level.of.education == selected_education &
+                              !is.na(paste0(tolower(subject), "_pass_fail")))
+    
+    # Calculate the fail proportions
+    fail_proportions <- prop.table(table(filtered_data$test.preparation.course, filtered_data[[paste0(tolower(subject), "_pass_fail")]]), 2)[,"Fail"]
+    
+    # Round the proportions to two decimal places
+    rounded_proportions <- round(fail_proportions, 2)
+    
+    # Calculate the difference between the two bars
+    difference <- fail_proportions["none"] - fail_proportions["completed"]
+    
+    # Identify the lower and higher values for the bars
+    lower_value <- min(fail_proportions)
+    higher_value <- max(fail_proportions)
+    
+    # Generate the bar chart
+    p <- ggplot(data.frame(Pass_Fail = names(fail_proportions), Proportion = fail_proportions), 
+                aes(x = Pass_Fail, y = Proportion, fill = Pass_Fail)) +
+      geom_bar(stat = "identity", position = "dodge") +
+      geom_segment(aes(x = 1.25, xend = 1.75, y = lower_value, yend = higher_value),
+                   arrow = arrow(type = "closed", angle = 20, length = unit(0.1, "inches")), color = "black", size = 0.5) +
+      geom_text(aes(x = 1.5, y = mean(fail_proportions), label = sprintf("%.2f", difference)),
+                color = "black", size = 4, vjust = 0.5, hjust = -0.5) +
+      labs(title = paste("Fail Rate -", subject, "-", selected_education), 
+           x = "Test Preparation Course", y = "Fail Rate (Proportion)") +
+      theme_minimal() +
+      guides(fill = FALSE) +  # Remove the legend
+      scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, by = 0.2))  # Adjust y-axis limits and breaks
+    
+    ggplotly(p)  # Convert ggplot to plotly without tooltip
+  }
+  
+  # Render the subject fail rate charts
+  output$bar_chart_test_prep_math <- renderPlotly({
+    render_subject_fail_rate_chart("Math", input$education_dropdown)
+  })
+  
+  output$bar_chart_test_prep_reading <- renderPlotly({
+    render_subject_fail_rate_chart("Reading", input$education_dropdown)
+  })
+  
+  output$bar_chart_test_prep_writing <- renderPlotly({
+    render_subject_fail_rate_chart("Writing", input$education_dropdown)
+  })
+}
+
+# Run the application
+shinyApp(ui, server)
+
+
