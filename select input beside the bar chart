@@ -103,7 +103,7 @@ server <- function(input, output) {
                    arrow = arrow(type = "closed", angle = 20, length = unit(0.1, "inches")), color = "black", size = 0.5) +
       geom_text(aes(x = 1.275, y = mean(pass_fail_df$Percentage), label = sprintf("%.2f", difference)),
                 color = "black", size = 4, vjust = 0.5, hjust = -0.5) +
-      labs(title = paste("Fail Rate -", subject, "-", selected_education), 
+      labs(title = paste(subject, "-", selected_education), 
            x = "Test Preparation Course", y = "Fail Rate (%)") +
       theme_minimal() +
       guides(fill = FALSE)  # Remove the legend
