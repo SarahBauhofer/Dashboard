@@ -1,0 +1,25 @@
+render_test_prep_bar_chart <- function(subject, selected_education) {
+  pass_fail_data <- table(StudentsPerformance_3$test.preparation.course, StudentsPerformance_3[[paste0(tolower(subject), "_pass_fail")]], StudentsPerformance_3$parental.level.of.education)
+  
+  pass_fail_df <- as.data.frame(pass_fail_data)
+  names(pass_fail_df) <- c("Test Preparation Course", "Pass/Fail", "Education Level", "Count")
+  
+  # Filter based on selected education level
+  pass_fail_df <- pass_fail_df[pass_fail_df$`Education Level` == selected_education, ]
+  
+  # Calculate the difference between the two bars
+  difference <- pass_fail_df$Count[1] - pass_fail_df$Count[2]
+  
+  p <- ggplot(pass_fail_df, aes(x = `Test Preparation Course`, y = Count, fill = `Pass/Fail`)) +
+    geom_bar(stat = "identity", position = "dodge", color = "gray") +
+    geom_segment(aes(x = 1, xend = 1.55, y = pass_fail_df$Count[1], yend = pass_fail_df$Count[2]),
+                 arrow = arrow(type = "closed", angle = 20, length = unit(0.1, "inches")), color = "black", size = 0.5) +
+    geom_text(aes(x = 1.275, y = mean(pass_fail_df$Count), label = sprintf("%d", difference)),
+              color = "black", size = 4, vjust = 0.5, hjust = -0.5) +
+    labs(title = paste(subject, "-", selected_education), 
+         x = "Test Preparation Course", y = "Count") +
+    theme_minimal() +
+    guides(fill = FALSE)  # Remove the legend
+    
+  ggplotly(p)  # Convert ggplot to plotly without tooltip
+}
