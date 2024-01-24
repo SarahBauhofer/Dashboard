@@ -20,6 +20,7 @@ library(ggplot2)
 library(corrplot)
 library(reshape2)
 library(plotly)
+library(DT)
 
 # Read your dataset
 StudentsPerformance_3 <- read.csv("https://raw.githubusercontent.com/SarahBauhofer/Dashboard/main/StudentsPerformance-3.csv")
@@ -33,6 +34,15 @@ StudentsPerformance_3$math_pass_fail <- ifelse(StudentsPerformance_3$math.score 
 StudentsPerformance_3$writing_pass_fail <- ifelse(StudentsPerformance_3$writing.score >= passing_threshold, "Pass", "Fail")
 StudentsPerformance_3$reading_pass_fail <- ifelse(StudentsPerformance_3$reading.score >= passing_threshold, "Pass", "Fail")
 
+# Aggregate data for average scores
+avg_scores <- aggregate(cbind(math.score, reading.score, writing.score) ~ test.preparation.course, 
+                        data = StudentsPerformance_3, FUN = function(x) round(mean(x, na.rm = TRUE), 2))
+# Rename subject names
+colnames(avg_scores) <- c("Test Preparation Course", "Math", "Reading", "Writing")
+
+# Reshape data to long format
+avg_scores_long <- reshape2::melt(avg_scores, id.vars = "Test Preparation Course", variable.name = "Subject", value.name = "Average Score")
+
 # Define UI
 ui <- fluidPage(
   titlePanel(title = "Test Preperation Course Evaluation Dashboard"),
@@ -41,11 +51,12 @@ ui <- fluidPage(
     # Section 1: Overview
     fluidRow(
       column(6,
-             box(width = 12, title = "Student Performance Table",
-                 plotlyOutput("performance_table"),
-             ),
+             box(width = 12, title = "Average Scores per Subject",
+                 dataTableOutput("average_scores_table")
+             )
       )
     ),
+    
     
     # Section 2: Bar Chart Fail Rate
     fluidRow(
@@ -77,6 +88,23 @@ server <- function(input, output) {
   # Add Pass/Fail Status and Overall Score to the dataset
   StudentsPerformance_3$overall_score <- rowSums(StudentsPerformance_3[, c("math.score", "reading.score", "writing.score")])
   StudentsPerformance_3$pass_fail <- ifelse(StudentsPerformance_3$overall_score >= 150, "Pass", "Fail")
+  
+  # Section 1: Overview
+  
+  # Create a static table showing average scores for each subject and test preparation course using DT
+  output$average_scores_table <- renderDT({
+    avg_scores <- aggregate(cbind(math.score, reading.score, writing.score) ~ test.preparation.course, 
+                            data = StudentsPerformance_3, FUN = function(x) round(mean(x), 2))
+    
+    # Reshape the data for easier rendering in DT
+    avg_scores_long <- melt(avg_scores, id.vars = "test.preparation.course", variable.name = "Subject", value.name = "Average Score")
+    
+    datatable(avg_scores_long, 
+              options = list(pageLength = 10, lengthChange = FALSE),
+              rownames = FALSE,
+              filter = "top",
+              colnames = c("Test Preparation Course", "Subject", "Average Score"))
+  })
   
   # Test Preparation Bar Charts
   render_test_prep_bar_chart <- function(subject, selected_education) {
