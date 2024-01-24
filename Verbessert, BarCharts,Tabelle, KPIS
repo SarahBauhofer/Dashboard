@@ -1,8 +1,8 @@
 # Install and load necessary libraries outside of the Shiny app script
-packages <- c("shiny", "shinydashboard", "ggplot2", "corrplot", "reshape2", "plotly")
+packages <- c("shiny", "shinydashboard", "ggplot2", "corrplot", "reshape2", "plotly", "DT")
 
 install_if_missing <- function(package) {
-  if (!require(package, character.only = TRUE)) { 
+  if (!require(package, character.only = TRUE)) {
     install.packages(package, dependencies = TRUE)
     if (!require(package, character.only = TRUE)) {
       stop("Package installation failed: ", package)
@@ -51,27 +51,28 @@ ui <- fluidPage(
     
     # Section 1: Key Performance Indicators (KPIs)
     fluidRow(
+      
+      # Total Participants
+      box(width = 3,
+          valueBox("Total Participants", value = textOutput("total_participants_text"))),
+      
       # Participation Rate KPI
-      column(4,
-             infoBox("Participation Rate", value = textOutput("participant_rate_text"), icon = icon("users"))
-      ),
+      box(width = 3,
+          valueBox("Participation Rate", value = textOutput("participant_rate_text"))),
       
       # Failure Rate KPI
-      column(4,
-             infoBox("Failure Rate", value = textOutput("failure_rate_text"), icon = icon("exclamation-triangle"))
-      ),
+      box(width = 3,
+          valueBox("Failure Rate", value = textOutput("failure_rate_text"))),
       
       # Best 10% of Students KPI
-      column(4,
-             infoBox("Top 10% Pass Rate", value = textOutput("top_10_pass_rate_text"), icon = icon("check-circle"))
-      )
+      box(width = 3,
+          valueBox("Top 10% Pass Rate", value = textOutput("top_10_pass_rate_text")))
     ),
-    
     
     # Section 2: Overview
     fluidRow(
-      column(6,
-             box(width = 12, title = "Average Scores per Subject",
+      column(8,
+             box(width = 8, title = "Average Scores per Subject",
                  dataTableOutput("average_scores_table")
              )
       )
@@ -87,20 +88,19 @@ ui <- fluidPage(
       ),
       # Bar Chart for Math
       column(4,
-             box(width = 12, plotlyOutput("bar_chart_test_prep_math"))
+             box(width = 10, plotlyOutput("bar_chart_test_prep_math"))
       ),
       # Bar Chart for Reading
       column(4,
-             box(width = 12, plotlyOutput("bar_chart_test_prep_reading"))
+             box(width = 10, plotlyOutput("bar_chart_test_prep_reading"))
       ),
       # Bar Chart for Writing
       column(4,
-             box(width = 12, plotlyOutput("bar_chart_test_prep_writing"))
+             box(width = 10, plotlyOutput("bar_chart_test_prep_writing"))
       )
     )
   )
 )
-
 
 # Define server logic
 server <- function(input, output) {
@@ -111,6 +111,11 @@ server <- function(input, output) {
   StudentsPerformance_3$pass_fail <- ifelse(StudentsPerformance_3$overall_score >= 150, "Pass", "Fail")
   
   # Section 1: Key Performance Indicators (KPIs)
+  
+  # Total Participants
+  output$total_participants_text <- renderText({
+    paste(total_participants)
+  })
   
   # Calculate failure rate
   failure_rate <- function() {
@@ -156,7 +161,7 @@ server <- function(input, output) {
     
     # Reshape the data for easier rendering in DT
     datatable(avg_scores_long, 
-              options = list(pageLength = 10, lengthMenu = c(10), lengthChange = FALSE, search= NULL, dom = 't'),
+              options = list(pageLength = 10, lengthMenu = c(10), lengthChange = FALSE, search = NULL, dom = 't'),
               rownames = FALSE,
               colnames = c("Test Preparation Course", "Subject", "Average Score"))
   })
