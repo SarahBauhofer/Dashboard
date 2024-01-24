@@ -45,10 +45,30 @@ avg_scores_long <- reshape2::melt(avg_scores, id.vars = "Test Preparation Course
 
 # Define UI
 ui <- fluidPage(
-  titlePanel(title = "Test Preperation Course Evaluation Dashboard"),
+  titlePanel(title = "Test Preparation Course Evaluation Dashboard"),
   
   dashboardBody(
-    # Section 1: Overview
+    
+    # Section 1: Key Performance Indicators (KPIs)
+    fluidRow(
+      # Participation Rate KPI
+      column(4,
+             infoBox("Participation Rate", value = textOutput("participant_rate_text"), icon = icon("users"))
+      ),
+      
+      # Failure Rate KPI
+      column(4,
+             infoBox("Failure Rate", value = textOutput("failure_rate_text"), icon = icon("exclamation-triangle"))
+      ),
+      
+      # Best 10% of Students KPI
+      column(4,
+             infoBox("Top 10% Pass Rate", value = textOutput("top_10_pass_rate_text"), icon = icon("check-circle"))
+      )
+    ),
+    
+    
+    # Section 2: Overview
     fluidRow(
       column(6,
              box(width = 12, title = "Average Scores per Subject",
@@ -57,8 +77,7 @@ ui <- fluidPage(
       )
     ),
     
-    
-    # Section 2: Bar Chart Fail Rate
+    # Section 3: Bar Chart Fail Rate
     fluidRow(
       # Select Education Level Dropdown
       column(3,
@@ -82,14 +101,53 @@ ui <- fluidPage(
   )
 )
 
+
 # Define server logic
 server <- function(input, output) {
+  total_participants <- nrow(StudentsPerformance_3)
   
   # Add Pass/Fail Status and Overall Score to the dataset
   StudentsPerformance_3$overall_score <- rowSums(StudentsPerformance_3[, c("math.score", "reading.score", "writing.score")])
   StudentsPerformance_3$pass_fail <- ifelse(StudentsPerformance_3$overall_score >= 150, "Pass", "Fail")
   
-  # Section 1: Overview
+  # Section 1: Key Performance Indicators (KPIs)
+  
+  # Calculate failure rate
+  failure_rate <- function() {
+    total_participants <- nrow(StudentsPerformance_3)
+    participants_failed <- sum(StudentsPerformance_3$pass_fail == "Fail")
+    failure_rate_value <- participants_failed / total_participants * 100
+    return(paste(round(failure_rate_value, 2), "%"))
+  }
+  
+  # Calculate top 10% pass rate
+  top_10_pass_rate <- function() {
+    top_10_percentage <- 10
+    threshold_score <- quantile(StudentsPerformance_3$overall_score, 1 - (top_10_percentage / 100))
+    top_10_passed <- sum(StudentsPerformance_3$overall_score >= threshold_score)
+    top_10_pass_rate_value <- top_10_passed / total_participants * 100
+    return(paste(round(top_10_pass_rate_value, 2), "%"))
+  }
+  
+  # Section 1: Participant Rate
+  output$participant_rate_text <- renderText({
+    total_participants <- nrow(StudentsPerformance_3)
+    participants_completed <- sum(StudentsPerformance_3$test.preparation.course == "completed")
+    participant_rate_value <- participants_completed / total_participants * 100
+    paste(round(participant_rate_value, 2), "%")
+  })
+  
+  # Section 1: Failure Rate
+  output$failure_rate_text <- renderText({
+    failure_rate()
+  })
+  
+  # Section 1: Top 10% Pass Rate
+  output$top_10_pass_rate_text <- renderText({
+    top_10_pass_rate()
+  })
+  
+  # Section 2: Overview
   
   # Create a static table showing average scores for each subject and test preparation course using DT
   output$average_scores_table <- renderDT({
@@ -98,13 +156,13 @@ server <- function(input, output) {
     
     # Reshape the data for easier rendering in DT
     datatable(avg_scores_long, 
-              options = list(pageLength = 10, lengthMenu = c(10), lengthChange = FALSE, searching = FALSE, dom = 't'),
+              options = list(pageLength = 10, lengthMenu = c(10), lengthChange = FALSE, search= NULL, dom = 't'),
               rownames = FALSE,
-              filter = "top",
               colnames = c("Test Preparation Course", "Subject", "Average Score"))
   })
   
-  # Test Preparation Bar Charts
+  
+  # Section 3: Test Preparation Bar Charts
   render_test_prep_bar_chart <- function(subject, selected_education) {
     pass_fail_data <- table(StudentsPerformance_3$test.preparation.course, StudentsPerformance_3[[paste0(tolower(subject), "_pass_fail")]], StudentsPerformance_3$parental.level.of.education)
     
