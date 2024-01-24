@@ -97,10 +97,8 @@ server <- function(input, output) {
                             data = StudentsPerformance_3, FUN = function(x) round(mean(x), 2))
     
     # Reshape the data for easier rendering in DT
-    avg_scores_long <- melt(avg_scores, id.vars = "test.preparation.course", variable.name = "Subject", value.name = "Average Score")
-    
     datatable(avg_scores_long, 
-              options = list(pageLength = 10, lengthChange = FALSE),
+              options = list(pageLength = 10, lengthMenu = c(10), lengthChange = FALSE, searching = FALSE, dom = 't'),
               rownames = FALSE,
               filter = "top",
               colnames = c("Test Preparation Course", "Subject", "Average Score"))
