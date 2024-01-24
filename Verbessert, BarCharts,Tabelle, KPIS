@@ -2,7 +2,7 @@
 packages <- c("shiny", "shinydashboard", "ggplot2", "corrplot", "reshape2", "plotly")
 
 install_if_missing <- function(package) {
-  if (!require(package, character.only = TRUE)) {
+  if (!require(package, character.only = TRUE)) { 
     install.packages(package, dependencies = TRUE)
     if (!require(package, character.only = TRUE)) {
       stop("Package installation failed: ", package)
