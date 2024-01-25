@@ -1,0 +1,254 @@
+# Install and load necessary libraries outside of the Shiny app script
+packages <- c("shiny", "shinydashboard", "ggplot2", "corrplot", "reshape2", "plotly", "DT")
+
+install_if_missing <- function(package) {
+  if (!require(package, character.only = TRUE)) {
+    install.packages(package, dependencies = TRUE)
+    if (!require(package, character.only = TRUE)) {
+      stop("Package installation failed: ", package)
+    }
+  }
+  library(package, character.only = TRUE)
+}
+
+lapply(packages, install_if_missing)
+
+# The Shiny app script starts here
+library(shiny)
+library(shinydashboard)
+library(ggplot2)
+library(corrplot)
+library(reshape2)
+library(plotly)
+library(DT)
+
+# Read your dataset
+StudentsPerformance_3 <- read.csv("https://raw.githubusercontent.com/SarahBauhofer/Dashboard/main/StudentsPerformance-3.csv")
+
+# Remove "lunch" and "race/ethnicity" columns
+StudentsPerformance_3 <- StudentsPerformance_3[, !(names(StudentsPerformance_3) %in% c("lunch", "race.ethnicity"))]
+
+# Add columns for math, writing, and reading
+passing_threshold <- 50
+StudentsPerformance_3$math_pass_fail <- ifelse(StudentsPerformance_3$math.score >= passing_threshold, "Pass", "Fail")
+StudentsPerformance_3$writing_pass_fail <- ifelse(StudentsPerformance_3$writing.score >= passing_threshold, "Pass", "Fail")
+StudentsPerformance_3$reading_pass_fail <- ifelse(StudentsPerformance_3$reading.score >= passing_threshold, "Pass", "Fail")
+
+# Aggregate data for average scores
+avg_scores <- aggregate(cbind(math.score, reading.score, writing.score) ~ test.preparation.course, 
+                        data = StudentsPerformance_3, FUN = function(x) round(mean(x, na.rm = TRUE), 2))
+# Rename subject names
+colnames(avg_scores) <- c("Test Preparation Course", "Math", "Reading", "Writing")
+
+# Reshape data to long format
+avg_scores_long <- reshape2::melt(avg_scores, id.vars = "Test Preparation Course", variable.name = "Subject", value.name = "Average Score")
+
+# Define UI
+ui <- fluidPage(
+  titlePanel(title = "Test Preparation Course Evaluation Dashboard"),
+  
+  dashboardBody(
+    
+    # Section 1: Key Performance Indicators (KPIs)
+    fluidRow(
+      
+      # Total Participants
+      box(width = 3,
+          valueBox("Total Participants", value = textOutput("total_participants_text"))),
+      
+      # Participation Rate KPI
+      box(width = 3,
+          valueBox("Participation Rate", value = textOutput("participant_rate_text"))),
+      
+      # Failure Rate KPI
+      box(width = 3,
+          valueBox("Failure Rate", value = textOutput("failure_rate_text"))),
+      
+      # Best 10% of Students KPI
+      box(width = 3,
+          valueBox("Top 10% Pass Rate", value = textOutput("top_10_pass_rate_text")))
+    ),
+    
+  
+    # Section 2: Overview
+    fluidRow(
+      #select subject Dropdown
+      selectInput("subject_dropdown", "Select Subject", 
+                  choices = c("All","Math", "Reading", "Writing"), 
+                  selected = "All"),
+      
+      column(8,
+             box(width = 8, title = "Average Scores per Subject",
+                 dataTableOutput("average_scores_table")
+             )
+      )
+    ),
+    
+    # Section 3: Bar Chart Fail Rate
+    fluidRow(
+      # Select Education Level Dropdown
+      column(3,
+             selectInput("education_dropdown", "Select Parental level of education", 
+                         choices = unique(StudentsPerformance_3$parental.level.of.education),
+                         selected = NULL)
+      ),
+      # Bar Chart for Math
+      column(4,
+             box(width = 10, plotlyOutput("bar_chart_test_prep_math"))
+      ),
+      # Bar Chart for Reading
+      column(4,
+             box(width = 10, plotlyOutput("bar_chart_test_prep_reading"))
+      ),
+      # Bar Chart for Writing
+      column(4,
+             box(width = 10, plotlyOutput("bar_chart_test_prep_writing"))
+      )
+    )
+  )
+)
+
+#Define server logic
+server <- function(input, output) {
+  total_participants <- nrow(StudentsPerformance_3)
+  
+  # Inside server() function
+  selected_subject <- reactive(input$subject_dropdown)
+  
+  
+  # Add Pass/Fail Status and Overall Score to the dataset
+  StudentsPerformance_3$overall_score <- rowSums(StudentsPerformance_3[, c("math.score", "reading.score", "writing.score")])
+  StudentsPerformance_3$pass_fail <- ifelse(StudentsPerformance_3$overall_score >= 150, "Pass", "Fail")
+  
+  # Section 1: Key Performance Indicators (KPIs)
+  
+  # Total Participants
+  output$total_participants_text <- renderText({
+    paste(total_participants)
+  })
+  
+  # Calculate failure rate
+  failure_rate <- function() {
+    total_participants <- nrow(StudentsPerformance_3)
+    participants_failed <- sum(StudentsPerformance_3$pass_fail == "Fail")
+    failure_rate_value <- participants_failed / total_participants * 100
+    return(paste(round(failure_rate_value, 2), "%"))
+  }
+  
+  # Calculate top 10% pass rate
+  top_10_pass_rate <- function() {
+    top_10_percentage <- 10
+    threshold_score <- quantile(StudentsPerformance_3$overall_score, 1 - (top_10_percentage / 100))
+    top_10_passed <- sum(StudentsPerformance_3$overall_score >= threshold_score)
+    top_10_pass_rate_value <- top_10_passed / total_participants * 100
+    return(paste(round(top_10_pass_rate_value, 2), "%"))
+  }
+  
+  # Section 1: Participant Rate
+  output$participant_rate_text <- renderText({
+    total_participants <- nrow(StudentsPerformance_3)
+    participants_completed <- sum(StudentsPerformance_3$test.preparation.course == "completed")
+    participant_rate_value <- participants_completed / total_participants * 100
+    paste(round(participant_rate_value, 2), "%")
+  })
+  
+  # Section 1: Failure Rate
+  output$failure_rate_text <- renderText({
+    failure_rate()
+  })
+  
+  # Section 1: Top 10% Pass Rate
+  output$top_10_pass_rate_text <- renderText({
+    top_10_pass_rate()
+  })
+  
+  
+  # Section 2: Overview
+  output$average_scores_table <- renderDT({
+    # Filter the data based on the selected subject
+    if (input$subject_dropdown == "All") {
+      # Display values for reading, writing, and math in the table
+      datatable(avg_scores, 
+                options = list(pageLength = 10, lengthMenu = c(10), lengthChange = FALSE, search = NULL, dom = 't'),
+                rownames = FALSE,
+                colnames = c("Test Preparation Course", "Math", "Reading", "Writing"))
+    } else {
+      # Display values for the selected subject only
+      filtered_avg_scores_long <- avg_scores_long[avg_scores_long$Subject == input$subject_dropdown, ]
+      datatable(filtered_avg_scores_long, 
+                options = list(pageLength = 10, lengthMenu = c(10), lengthChange = FALSE, search = NULL, dom = 't'),
+                rownames = FALSE,
+                colnames = c("Test Preparation Course", "Subject", "Average Score"))
+    }
+  })
+  
+  
+  # Section 3: Test Preparation Bar Charts
+  render_test_prep_bar_chart <- function(selected_subject, selected_education) {
+    # Generate Bar Chart for the selected subject
+    pass_fail_data <- table(StudentsPerformance_3$test.preparation.course,
+                            StudentsPerformance_3[[paste0(tolower(selected_subject), "_pass_fail")]],
+                            StudentsPerformance_3$parental.level.of.education)
+    
+    pass_fail_df <- as.data.frame(pass_fail_data)
+    names(pass_fail_df) <- c("Test Preparation Course", "Pass/Fail", "Education Level", "Count")
+    
+    # Filter based on selected education level
+    pass_fail_df <- pass_fail_df[pass_fail_df$`Education Level` == selected_education, ]
+    
+    # Calculate fail percentages only
+    pass_fail_df$Percentage <- ifelse(pass_fail_df$`Pass/Fail` == "Fail",
+                                      (pass_fail_df$Count / sum(pass_fail_df$Count)) * 100, 0)
+    
+    # Calculate the difference between the two bars
+    difference <- pass_fail_df$Percentage[1] - pass_fail_df$Percentage[2]
+    
+    p <- ggplot(pass_fail_df, aes(x = `Test Preparation Course`, y = Percentage, fill = `Pass/Fail`, text = sprintf("%.2f", Percentage))) +
+      geom_bar(stat = "identity", position = "dodge") +
+      geom_segment(aes(x = 1, xend = 1.55, y = pass_fail_df$Percentage[1], yend = pass_fail_df$Percentage[2], text = NA),
+                   arrow = arrow(type = "closed", angle = 20, length = unit(0.1, "inches")), color = "black", size = 0.5) +
+      geom_text(aes(x = 1.275, y = mean(pass_fail_df$Percentage), label = sprintf("%.2f", difference)),
+                color = "black", size = 4, vjust = 0.5, hjust = -0.5) +
+      labs(title = paste(selected_subject, "-", selected_education),
+           x = "Test Preparation Course", y = "Fail Rate (%)") +
+      theme_minimal() +
+      guides(fill = FALSE)  # Remove the legend
+    
+    ggplotly(p, tooltip = "text")  # Convert ggplot to plotly with tooltip
+  }
+  
+  # Update the render functions for bar charts
+  # Use selected_subject() where appropriate in your server logic
+  output$bar_chart_test_prep_math <- renderPlotly({
+    if (selected_subject() == "All") {
+      render_test_prep_bar_chart("Math", input$education_dropdown)
+    } else if (selected_subject() == "Math") {
+      render_test_prep_bar_chart("Math", input$education_dropdown)
+    } else {
+      plotly::plot_ly()  # return an empty plot for other subjects
+    }
+  })
+  
+  output$bar_chart_test_prep_reading <- renderPlotly({
+    if (selected_subject() == "All") {
+      render_test_prep_bar_chart("Reading", input$education_dropdown)
+    } else if (selected_subject() == "Reading") {
+      render_test_prep_bar_chart("Reading", input$education_dropdown)
+    } else {
+      plotly::plot_ly()  # return an empty plot for other subjects
+    }
+  })
+  
+  output$bar_chart_test_prep_writing <- renderPlotly({
+    if (selected_subject() == "All") {
+      render_test_prep_bar_chart("Writing", input$education_dropdown)
+    } else if (selected_subject() == "Writing") {
+      render_test_prep_bar_chart("Writing", input$education_dropdown)
+    } else {
+      plotly::plot_ly()  # return an empty plot for other subjects
+    }
+  })
+  
+}
+# Run the application
+shinyApp(ui, server)
