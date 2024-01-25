@@ -75,14 +75,24 @@ ui <- fluidPage(
                 selected = "All"),
     
     
-    # Section 2: Overview
-    fluidRow(
-      column(8,
-             box(width = 8, title = "Average Scores per Subject",
-                 dataTableOutput("average_scores_table")
-             )
-      )
-    ),
+   # Section 2: Overview
+  output$average_scores_table <- renderDT({
+    # Filter the data based on the selected subject
+    if (input$subject_dropdown == "All") {
+      # Display values for reading, writing, and math in the table
+      datatable(avg_scores, 
+                options = list(pageLength = 10, lengthMenu = c(10), lengthChange = FALSE, search = NULL, dom = 't'),
+                rownames = FALSE,
+                colnames = c("Test Preparation Course", "Math", "Reading", "Writing"))
+    } else {
+      # Display values for the selected subject only
+      filtered_avg_scores_long <- avg_scores_long[avg_scores_long$Subject == input$subject_dropdown, ]
+      datatable(filtered_avg_scores_long, 
+                options = list(pageLength = 10, lengthMenu = c(10), lengthChange = FALSE, search = NULL, dom = 't'),
+                rownames = FALSE,
+                colnames = c("Test Preparation Course", "Subject", "Average Score"))
+    }
+  })
     
     # Section 3: Bar Chart Fail Rate
     fluidRow(
