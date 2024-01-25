@@ -92,7 +92,7 @@ ui <- fluidPage(
                 rownames = FALSE,
                 colnames = c("Test Preparation Course", "Subject", "Average Score"))
     }
-  })
+  }),
     
     # Section 3: Bar Chart Fail Rate
     fluidRow(
