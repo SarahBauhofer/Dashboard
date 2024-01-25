@@ -217,35 +217,22 @@ server <- function(input, output) {
     ggplotly(p, tooltip = "text")  # Convert ggplot to plotly with tooltip
   }
   
-  # Update the render functions for bar charts
   # Use selected_subject() where appropriate in your server logic
   output$bar_chart_test_prep_math <- renderPlotly({
-    if (selected_subject() == "All") {
+    if (selected_subject() == "All" || selected_subject() == "Math") {
       render_test_prep_bar_chart("Math", input$education_dropdown)
-    } else if (selected_subject() == "Math") {
-      render_test_prep_bar_chart("Math", input$education_dropdown)
-    } else {
-      plotly::plot_ly()  # return an empty plot for other subjects
     }
   })
   
   output$bar_chart_test_prep_reading <- renderPlotly({
-    if (selected_subject() == "All") {
+    if (selected_subject() == "All" || selected_subject() == "Reading") {
       render_test_prep_bar_chart("Reading", input$education_dropdown)
-    } else if (selected_subject() == "Reading") {
-      render_test_prep_bar_chart("Reading", input$education_dropdown)
-    } else {
-      plotly::plot_ly()  # return an empty plot for other subjects
     }
   })
   
   output$bar_chart_test_prep_writing <- renderPlotly({
-    if (selected_subject() == "All") {
+    if (selected_subject() == "All" || selected_subject() == "Writing") {
       render_test_prep_bar_chart("Writing", input$education_dropdown)
-    } else if (selected_subject() == "Writing") {
-      render_test_prep_bar_chart("Writing", input$education_dropdown)
-    } else {
-      plotly::plot_ly()  # return an empty plot for other subjects
     }
   })
   
