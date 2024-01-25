@@ -87,21 +87,21 @@ ui <- fluidPage(
     # Section 3: Bar Chart Fail Rate
     fluidRow(
       # Select Education Level Dropdown
-      column(3,
+      column(2,
              selectInput("education_dropdown", "Select Parental level of education", 
                          choices = unique(StudentsPerformance_3$parental.level.of.education),
                          selected = NULL)
       ),
       # Bar Chart for Math
-      column(4,
+      column(3,
              box(width = 10, plotlyOutput("bar_chart_test_prep_math"))
       ),
       # Bar Chart for Reading
-      column(4,
+      column(3,
              box(width = 10, plotlyOutput("bar_chart_test_prep_reading"))
       ),
       # Bar Chart for Writing
-      column(4,
+      column(3,
              box(width = 10, plotlyOutput("bar_chart_test_prep_writing"))
       )
     )
