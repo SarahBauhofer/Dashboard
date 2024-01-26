@@ -1,17 +1,7 @@
 # Install and load necessary libraries outside of the Shiny app script
 packages <- c("shiny", "shinydashboard", "ggplot2", "corrplot", "reshape2", "plotly", "DT")
-
-install_if_missing <- function(package) {
-  if (!require(package, character.only = TRUE)) {
-    install.packages(package, dependencies = TRUE)
-    if (!require(package, character.only = TRUE)) {
-      stop("Package installation failed: ", package)
-    }
-  }
-  library(package, character.only = TRUE)
-}
-
-lapply(packages, install_if_missing)
+install.packages(packages, dependencies = TRUE)
+sapply(packages, library, character.only = TRUE)
 
 # The Shiny app script starts here
 library(shiny)
