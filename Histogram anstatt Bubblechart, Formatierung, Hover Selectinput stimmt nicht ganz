@@ -43,15 +43,33 @@ ui <- fluidPage(
   tags$head(
     tags$style(
       HTML("
-           .card {
-             border: 1px solid #ddd;
-             border-radius: 5px;
-             padding: 10px;
-             margin: 10px;
-           }
-           ")
+      .card {
+        background-color: #3498db; /* Blue color */
+        color: #ffffff; /* White text */
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow effect */
+        padding: 15px;
+        margin: 15px;
+        transition: background-color 0.3s; /* Smooth color transition on hover */
+      }
+      
+      .card:hover {
+        background-color: #2980b9; /* Darker blue on hover */
+      }
+      
+      .custom-select .selectize-dropdown .option {
+        color: white; /* Set your desired font color */
+      }
+
+      /* Hover effect for selectInput options */
+      .selectize-dropdown-content .option:hover {
+        background-color: #2980b9; /* Darker blue on hover */
+        color: #ffffff; /* White text on hover */
+      }
+    ")
     )
   ),
+  
   fluidRow(
     # Section 1: Key Performance Indicators (KPIs)
     column(3, 
@@ -69,20 +87,9 @@ ui <- fluidPage(
                textOutput("top_10_pass_rate_text"))
     )
   ),
+ 
   fluidRow(
-    # Section 2: Overview
-    column(12,
-           div(class = "card",
-               h2("Average Scores"),
-               dataTableOutput("average_scores_table"),
-               selectInput("subject_dropdown", "Select Subject", 
-                           choices = c("All", "Math", "Reading", "Writing"), 
-                           selected = "All")
-           )
-    )
-  ),
-  fluidRow(
-    # Section 3: Bar Chart Fail Rate
+    # Section 2: Bar Chart Fail Rate
     column(12,
            div(class = "card",
                h4("Failure Rate by Parental level of education"),
@@ -102,6 +109,20 @@ ui <- fluidPage(
                )
            )
     )
+  ),
+  
+  fluidRow(
+    # Section 3: Overview
+    column(12,
+           div(class = "card",
+               h2("Average Scores"),
+               dataTableOutput("average_scores_table"),
+               selectInput("subject_dropdown", "Select Subject", 
+                           choices = c("All", "Math", "Reading", "Writing"), 
+                           selected = "All")
+           )
+    )
+    
   ),
   fluidRow(
     # Section 4: Histogram (Overall Score vs. Participation Rate)
