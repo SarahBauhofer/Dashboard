@@ -56,19 +56,25 @@ ui <- fluidPage(
       .card:hover {
         background-color: #2980b9; /* Darker blue on hover */
       }
-      
-      .custom-select .selectize-dropdown .option {
-        color: white; /* Set your desired font color */
+
+      .selectize-input,
+      .selectize-input.single,
+      .selectize-control .selectize-dropdown .option {
+        background-color: #ffffff; /* Set background color for the selectInput */
+        color: #000000; /* Set font color for the selectInput */
+        border: 1px solid #cccccc; /* Set border color for the selectInput */
+        border-radius: 4px; /* Set border radius for the selectInput */
       }
 
       /* Hover effect for selectInput options */
       .selectize-dropdown-content .option:hover {
-        background-color: #2980b9; /* Darker blue on hover */
-        color: #ffffff; /* White text on hover */
+        background-color: #2980b9 !important; /* Darker blue on hover */
+        color: #ffffff !important; /* White text on hover */
       }
-    ")
+      ")
     )
   ),
+  
   
   fluidRow(
     # Section 1: Key Performance Indicators (KPIs)
