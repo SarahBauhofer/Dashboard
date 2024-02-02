@@ -231,7 +231,9 @@ server <- function(input, output, session) {
     
     difference <- pass_fail_df$Percentage[1] - pass_fail_df$Percentage[2]
     
-    p <- ggplot(pass_fail_df, aes(x = `Test Preparation Course`, y = Percentage, fill = `Pass/Fail`, text = sprintf("%.2f", Percentage))) +
+    p <- ggplot(pass_fail_df, aes(x = `Test Preparation Course`, y = Percentage, fill = `Pass/Fail`,
+                                  text = paste("Failures: ", pass_fail_df$Count, "<br>",
+                                               "Fail Percentage: ", sprintf("%.2f", pass_fail_df$Percentage), "%"))) +
       geom_bar(stat = "identity", position = "dodge") +
       geom_segment(aes(x = 1, xend = 1.55, y = pass_fail_df$Percentage[1], yend = pass_fail_df$Percentage[2], text = NA),
                    arrow = arrow(type = "closed", angle = 20, length = unit(0.1, "inches")), color = "black", size = 0.5) +
@@ -276,12 +278,15 @@ server <- function(input, output, session) {
                  colors = c("blue", "purple")) %>%
       layout(title = "Histogram: Overall Score",
              xaxis = list(title = "Overall Score"),
-             yaxis = list(title = "Frequency"),
+             yaxis = list(title = "Number of Students"),
              showlegend = TRUE,
              legend = list(title = "Test Preparation Course", traceorder = "normal"))
     
     p
   })
+  
+  
+  
   
 }
 
