@@ -1,0 +1,117 @@
+# Define UI
+ui <- fluidPage(
+  titlePanel(title = "Test Preparation Course Evaluation Dashboard"),
+  tags$head(
+    tags$style(
+      HTML("
+      body { background-color: #77B6FC; /* Set the background color for the entire body */
+      }
+      .card {
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 15px;
+        margin: 15px;
+        transition: background-color 0.3s;
+        text-align: left
+      }
+      
+      .card:hover {
+        background-color: #6EB6FC;
+      }
+
+      .section1 {
+        background-color: #FFE9BF;
+        color: #ffffff;
+        text-align: center
+      }
+
+      .section2 {
+        background-color: #C7E4FF;
+        color: #000000;
+      }
+
+      .section3 {
+        background-color: #FFC9C9;
+        color: #ffffff;
+      }
+
+      .section4 {
+        background-color: #E0E0E0;
+        color: #000000;
+      }
+      ")
+    )
+  ),
+  #Section 1: KPIS
+  fluidRow(
+    column(3, 
+           div(class = "card section1",
+               h4("👫 Total Participants"),
+               div(textOutput("total_participants_text"), style = "font-size: 24px;")  
+           )
+    ),
+    column(3,
+           div(class = "card section1",
+               h4("📊 Participation Rate"),
+               div(textOutput("participant_rate_text"), style = "font-size: 24px;")
+           )
+    ),
+    column(3,
+           div(class = "card section1",
+               h4("📉 Failure Rate"),
+               div(textOutput("failure_rate_text"), style = "font-size: 24px;")
+           )
+    ),
+    column(3,
+           div(class = "card section1",
+               h4("🎓 Top 10% Pass Rate"),
+               div(textOutput("top_10_pass_rate_text"), style = "font-size: 24px;")
+           )
+    )
+  ),
+  #Section 2: Bar Chart
+  fluidRow(
+    column(12,
+           div(class = "card section2",
+               h2("Failure Rate by Parental level of education"),
+               selectInput("education_dropdown", "Select Parental level of education", 
+                           choices = unique(StudentsPerformance_3$parental.level.of.education),
+                           selected = NULL),
+               fluidRow(
+                 column(4,
+                        plotlyOutput("bar_chart_test_prep_math")
+                 ),
+                 column(4,
+                        plotlyOutput("bar_chart_test_prep_reading")
+                 ),
+                 column(4,
+                        plotlyOutput("bar_chart_test_prep_writing")
+                 )
+               )
+           )
+    )
+  ),
+  #Section 3: Overview Table
+  fluidRow(
+    column(12,
+           div(class = "card section3",
+               h2("Average Scores"),
+               dataTableOutput("average_scores_table"),
+               selectInput("subject_dropdown", "Select Subject", 
+                           choices = c("All", "Math", "Reading", "Writing"), 
+                           selected = "All")
+           )
+    )
+  ),
+  #Section 4: Histogram 
+  fluidRow(
+    column(12,
+           div(class = "card section4",
+               h2("Overall Score vs. Participation Rate"),
+               plotlyOutput("histogram")  
+           )
+    )
+  )
+)
+
+
