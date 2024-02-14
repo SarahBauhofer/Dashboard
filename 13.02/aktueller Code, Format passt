@@ -148,9 +148,9 @@ ui <- fluidPage(
     ),
     fluidRow(
       column(6,
-             div(class = "card section3 overview-table-card",
+             div(class = "card section3 average-score-table-card",
                  h3("Average Scores", style = "text-align: center; color: #adb5bd;"),
-                 div(style = "background-color: white;",
+                 div(style = "background-color: white; text-align: left",
                      dataTableOutput("average_scores_table"))
              )
       ),
