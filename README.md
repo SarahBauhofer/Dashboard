@@ -69,42 +69,48 @@ ui <- fluidPage(
       }
     ")),
     fluidRow(
-      column(3,
+      column(2,
              checkboxInput("show_kpis", label = "Show KPIs", value = TRUE)
       )
     ),
     fluidRow(
-      column(3,
+      column(2,
              div(class = "card section1",
                  h4("Total Participants"),
                  div(textOutput("total_participants_text"), style = "font-size: 24px; color: #adb5bd;"),  
                  div(class = "icon", HTML('<i class="fas fa-users"></i>'))  # Using a Font Awesome icon
              )
       ),
-      column(3,
+      column(2,
              div(class = "card section1",
                  h4("Participation Rate"),
                  div(textOutput("participant_rate_text"), style = "font-size: 24px; color: #adb5bd;"),
                  div(class = "icon", HTML('<i class="fas fa-chart-pie"></i>'))  # Using a Font Awesome icon
              )
       ),
-      column(3,
+      column(2,
              div(class = "card section1",
                  h4("Failure Rate"),
                  div(textOutput("failure_rate_text"), style = "font-size: 24px; color: #adb5bd;"),
                  div(class = "icon", HTML('<i class="fas fa-chart-line"></i>'))  # Using a Font Awesome icon
              )
       ),
-      column(3,
+      column(2,
              div(class = "card section1",
                  h4("Top 10 Pass Rate"),
                  div(textOutput("top_10_pass_rate_text"), style = "font-size: 24px; color: #adb5bd;"),
                  div(class = "icon", HTML('<i class="fas fa-check-circle"></i>'))  # Using a Font Awesome icon
              )
+      ),
+      column(2,
+             div(class = "card section1",
+                 h4("Preperation Course Pass"),
+                 div(textOutput("passing_students_count_text"), style = "font-size: 24px; color: #adb5bd;"),
+                 div(class = "icon", HTML('<i class="fas fa-check-circle"></i>'))  # Using a Font Awesome icon
+             )
       )
     )
   ),
-  
   
   dashboardBody(
     tags$style(HTML("
@@ -122,22 +128,22 @@ ui <- fluidPage(
     ")),
     fluidRow(
       column(12,
-      div(class = "card section2",
-          selectizeInput("subject_dropdown", "Select Subject", 
-                         choices = c("All", "Math", "Reading", "Writing"), 
-                         selected = "All",
-                         options = list(
-                           placeholder = 'Select a subject',
-                           liveSearch = TRUE,
-                           style = 'btn-primary'
-                         )
-          )
+             div(class = "card section2",
+                 selectizeInput("subject_dropdown", "Select Subject", 
+                                choices = c("All", "Math", "Reading", "Writing"), 
+                                selected = "All",
+                                options = list(
+                                  placeholder = 'Select a subject',
+                                  liveSearch = TRUE,
+                                  style = 'btn-primary'
+                                )
+                 )
+             )
       )
-    )
     ),
     fluidRow(
       column(12,
-             div(class = "card section3 bar-chart-card",
+             div(class = "card section2 bar-chart-card",
                  h3("Failure Rate by Parental Level of Education", style = "text-align: center;"),
                  selectInput("education_dropdown", "Select Parental Level of Education", 
                              choices = unique(StudentsPerformance_3$parental.level.of.education),
@@ -152,7 +158,7 @@ ui <- fluidPage(
     ),
     fluidRow(
       column(6,
-             div(class = "card section2 average-score-table-card",
+             div(class = "card section3 average-score-table-card",
                  h3("Average Scores", style = "text-align: center; color: #adb5bd;"),
                  div(style = "background-color: white; text-align: left",
                      dataTableOutput("average_scores_table"))
@@ -167,7 +173,6 @@ ui <- fluidPage(
     )
   )
 )
-
 
 # Define server logic
 server <- function(input, output, session) {
@@ -226,7 +231,14 @@ server <- function(input, output, session) {
     top_10_pass_rate()
   })
   
-  # Section 2: Average Scores Table
+  # Passing Students Count who participated in the preparation course
+  output$passing_students_count_text <- renderText({
+    passing_students_count <- sum(StudentsPerformance_3$pass_fail == "Pass" & StudentsPerformance_3$test.preparation.course == "completed")
+    paste(passing_students_count)
+  })
+  
+  
+  # Section 2: Overview
   output$average_scores_table <- renderDT({
     if (input$subject_dropdown == "All") {
       datatable(avg_scores, 
