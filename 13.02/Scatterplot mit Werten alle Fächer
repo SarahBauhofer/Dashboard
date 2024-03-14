@@ -15,7 +15,7 @@ output$scatter_plot <- renderPlotly({
   p <- ggplot(score_data, aes(x = Score, y = value, color = variable)) +
     geom_point() +
     scale_color_manual(values = c("blue", "red", "green")) +
-    labs(title = "Number of Students per Score",
+    labs(title = "",
          x = "Score",
          y = "Number of Students") +
     theme_minimal() +
