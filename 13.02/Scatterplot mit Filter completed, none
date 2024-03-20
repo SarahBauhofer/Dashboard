@@ -1,0 +1,86 @@
+ # Section 4: Scatter Plot
+  # Combine all individual scores into one dataset
+  all_scores <- data.frame(
+    Subject = rep(c("Math", "Reading", "Writing"), each = nrow(StudentsPerformance_3)),
+    Score = c(StudentsPerformance_3$math.score, StudentsPerformance_3$reading.score, StudentsPerformance_3$writing.score),
+    Student = rep(1:nrow(StudentsPerformance_3), times = 3)
+  )
+  
+  # Scores for students who participated in the test preparation course
+  scores_prep_course <- StudentsPerformance_3[StudentsPerformance_3$test.preparation.course == "completed", c("math.score", "reading.score", "writing.score")]
+  
+  # Scores for students who did not participate in the test preparation course
+  scores_no_prep_course <- StudentsPerformance_3[StudentsPerformance_3$test.preparation.course == "none", c("math.score", "reading.score", "writing.score")]
+  
+  # Filtered scores based on selected subject
+  filtered_scores <- reactive({
+    if (input$subject_dropdown == "All") {
+      return(all_scores)
+    } else {
+      return(all_scores[all_scores$Subject == input$subject_dropdown, ])
+    }
+  })
+  
+  # Create scatter plot
+  output$scatter_plot <- renderPlotly({
+    # Calculate participation rate
+    participants_completed <- sum(StudentsPerformance_3$test.preparation.course == "completed")
+    participation_rate <- participants_completed / total_participants * 100
+    
+    # Define data based on selected test preparation course
+    if (!is.null(input$test_prep_dropdown)) {
+      if (input$test_prep_dropdown == "All") {
+        filtered_scores <- all_scores
+      } else if (input$test_prep_dropdown == "completed") {
+        filtered_scores <- scores_prep_course
+      } else if (input$test_prep_dropdown == "none") {
+        filtered_scores <- scores_no_prep_course
+      }
+    }
+    
+    # Create the scatter plot
+    p <- ggplot(filtered_scores(), aes(x = Student, y = Score, color = Subject)) +
+      geom_point() +
+      labs(
+        x = "Student",
+        y = "Score") +
+      theme_minimal() +
+      scale_color_brewer(palette = "Set1") +  # Using a color palette suitable for colorblind users
+      guides(color = guide_legend(title = "Subject")) +
+      geom_hline(yintercept = participation_rate, linetype = "dashed", color = "black")  # Add participation rate line
+    
+    # Convert ggplot to plotly
+    ggplotly(p, dynamicTicks = TRUE) %>%
+      layout(
+        updatemenus = list(
+          list(
+            buttons = list(
+              list(
+                args = list("test_prep_dropdown", "All"),
+                label = "All",
+                method = "update"
+              ),
+              list(
+                args = list("test_prep_dropdown", "completed"),
+                label = "Completed",
+                method = "update"
+              ),
+              list(
+                args = list("test_prep_dropdown", "none"),
+                label = "None",
+                method = "update"
+              )
+            ),
+            direction = "down",
+            showactive = TRUE,
+            x = 0.01,
+            xanchor = "left",
+            y = 1.1,
+            yanchor = "top"
+          )
+        )
+      )
+  })
+}
+
+shinyApp(ui, server)
