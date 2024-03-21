@@ -320,8 +320,6 @@ server <- function(input, output, session) {
     Student = rep(1:nrow(StudentsPerformance_3), times = 3)
   )
   
-  
-  
   # Render scatter plot
   output$scatter_plot <- renderPlotly({
     # Define data based on selected subject
@@ -346,12 +344,10 @@ server <- function(input, output, session) {
                filtered_scores <- filtered_scores[filtered_scores$Score > 50, ]
              },
              "Lower than or equal to 50" = {
-               filtered_scores <- subset(filtered_scores, Score <= 50)
+               filtered_scores <- filtered_scores[filtered_scores$Score <= 50, ]
              }
       )
     }
-    
-    
     
     # Create the scatter plot
     p <- ggplot(filtered_scores, aes(x = Student, y = Score, color = Subject)) +
@@ -362,9 +358,7 @@ server <- function(input, output, session) {
       theme_minimal() +
       scale_color_brewer(palette = "Set1") +  # Using a color palette suitable for colorblind users
       facet_wrap(~ Subject, scales = "free_y") +  # Facet by subject
-      guides(color = FALSE) +  # Remove legend
-      geom_hline(data = avg_scores_long, aes(yintercept = `Average Score`, linetype = `Test Preparation Course`), show.legend = TRUE) +  # Horizontal lines for average scores
-      scale_linetype_manual(values = c("dashed", "solid"))  # Differentiate lines by test preparation course participation
+      guides(color = FALSE)  # Remove legend
     
     # Convert ggplot to plotly
     ggplotly(p, dynamicTicks = TRUE)
@@ -373,4 +367,3 @@ server <- function(input, output, session) {
 }
 
 shinyApp(ui, server)
-
