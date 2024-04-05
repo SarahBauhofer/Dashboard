@@ -1,6 +1,6 @@
 # Install and load necessary libraries
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load(shiny, shinydashboard, ggplot2, corrplot, reshape2, plotly, DT, shinythemes, shinyjs, shinydashboardPlus)
+pacman::p_load(shiny, shinydashboard, ggplot2, corrplot, reshape2, plotly, DT, shinythemes, shinyjs, shinydashboardPlus, RColorBrewer)
 
 # Read dataset
 StudentsPerformance_3 <- read.csv("https://raw.githubusercontent.com/SarahBauhofer/Dashboard/main/StudentsPerformance-3.csv")
@@ -97,14 +97,14 @@ ui <- fluidPage(
       ),
       column(2,
              div(class = "card section1",
-                 h4("Top 10 Pass Rate"),
-                 div(textOutput("top_10_pass_rate_text"), style = "font-size: 24px; color: #adb5bd;"),
-                 div(class = "icon", HTML('<i class="fas fa-check-circle"></i>'))  # Using a Font Awesome icon
+                 h4("Preparation Course Fail"),
+                 div(textOutput("preparation_course_fail_text"), style = "font-size: 24px; color: #adb5bd;"),
+                 div(class = "icon", HTML('<i class="fas fa-times-circle"></i>'))  # Using a Font Awesome icon for failure
              )
       ),
       column(2,
              div(class = "card section1",
-                 h4("Preperation Course Pass"),
+                 h4("Preparation Course Pass"),
                  div(textOutput("passing_students_count_text"), style = "font-size: 24px; color: #adb5bd;"),
                  div(class = "icon", HTML('<i class="fas fa-check-circle"></i>'))  # Using a Font Awesome icon
              )
@@ -166,13 +166,16 @@ ui <- fluidPage(
       ),
       column(6,
              div(class = "card section4 scatter-plot-card",
-                 h3("Overall Score vs. Participation Rate", style = "text-align: center; color: #adb5bd;"),
+                 h3("Scores of Each Student", style = "text-align: center; color: #adb5bd;"),
+                 selectInput("cluster_dropdown", "Clustering Criterion:",
+                             choices = c("All", "Top 25%", "Bottom 25%", "Higher than 50", "Lower than or equal to 50")),
                  plotlyOutput("scatter_plot")  
              )
       )
     )
   )
 )
+
 
 # Define server logic
 server <- function(input, output, session) {
@@ -209,12 +212,9 @@ server <- function(input, output, session) {
     return(paste(round(failure_rate_value, 2), "%"))
   }
   
-  top_10_pass_rate <- function() {
-    top_10_percentage <- 10
-    threshold_score <- quantile(StudentsPerformance_3$overall_score, 1 - (top_10_percentage / 100))
-    top_10_passed <- sum(StudentsPerformance_3$overall_score >= threshold_score)
-    top_10_pass_rate_value <- top_10_passed / total_participants * 100
-    return(paste(round(top_10_pass_rate_value, 2), "%"))
+  preparation_course_fail_count <- function() {
+    preparation_course_fail <- sum(StudentsPerformance_3$test.preparation.course == "completed" & StudentsPerformance_3$pass_fail == "Fail")
+    return(preparation_course_fail)
   }
   
   output$participant_rate_text <- renderText({
@@ -227,8 +227,8 @@ server <- function(input, output, session) {
     failure_rate()
   })
   
-  output$top_10_pass_rate_text <- renderText({
-    top_10_pass_rate()
+  output$preparation_course_fail_text <- renderText({
+    preparation_course_fail_count()
   })
   
   # Passing Students Count who participated in the preparation course
@@ -254,8 +254,7 @@ server <- function(input, output, session) {
     }
   })
   
-  # Section 3: Test Preparation Bar Charts
-  
+  # Section 3: Test Preparation Bar Charts 
   # Function to render test preparation bar chart for a specific subject and education level
   render_test_prep_bar_chart <- function(selected_subject, selected_education) {
     pass_fail_data <- table(StudentsPerformance_3$test.preparation.course,
@@ -312,34 +311,58 @@ server <- function(input, output, session) {
   })
   
   
-  # Section 4: Scatter Plot (Overall Score vs Participation Rate)
+  # Section 4: Scatter Plot (Continued)
+  # Combine all individual scores into one dataset
+  all_scores <- data.frame(
+    Subject = rep(c("Math", "Reading", "Writing"), each = nrow(StudentsPerformance_3)),
+    Score = c(StudentsPerformance_3$math.score, StudentsPerformance_3$reading.score, StudentsPerformance_3$writing.score),
+    Student = rep(1:nrow(StudentsPerformance_3), times = 3)
+  )
+  
+  # Render scatter plot
   output$scatter_plot <- renderPlotly({
-    # Filter data based on selected subject
-    selected_subject_data <- switch(input$subject_dropdown,
-                                    "Math" = StudentsPerformance_3$math.score,
-                                    "Reading" = StudentsPerformance_3$reading.score,
-                                    "Writing" = StudentsPerformance_3$writing.score,
-                                    StudentsPerformance_3$overall_score)
+    # Define data based on selected subject
+    if (input$subject_dropdown == "All") {
+      filtered_scores <- all_scores
+    } else {
+      filtered_scores <- all_scores[all_scores$Subject == input$subject_dropdown, ]
+    }
     
-    # Create a data frame for the scatter plot
-    scatter_data <- data.frame(Overall_Score = selected_subject_data,
-                               Participation_Rate = (sum(StudentsPerformance_3$test.preparation.course == "completed") / total_participants) * 100,
-                               Subject = input$subject_dropdown)
+    # Apply clustering based on selected criterion
+    if (!is.null(input$cluster_dropdown)) {
+      switch(input$cluster_dropdown,
+             "Top 25%" = {
+               score_threshold <- quantile(filtered_scores$Score, 0.75)
+               filtered_scores <- filtered_scores[filtered_scores$Score >= score_threshold, ]
+             },
+             "Bottom 25%" = {
+               score_threshold <- quantile(filtered_scores$Score, 0.25)
+               filtered_scores <- filtered_scores[filtered_scores$Score <= score_threshold, ]
+             },
+             "Higher than 50" = {
+               filtered_scores <- filtered_scores[filtered_scores$Score > 50, ]
+             },
+             "Lower than or equal to 50" = {
+               filtered_scores <- filtered_scores[filtered_scores$Score <= 50, ]
+             }
+      )
+    }
     
     # Create the scatter plot
-    p <- plot_ly(data = scatter_data, x = ~Overall_Score, y = ~Participation_Rate, color = ~Subject,
-                 type = "scatter", mode = "markers") %>%
-      layout(
-        xaxis = list(title = "Overall Score"),
-        yaxis = list(title = "Participation Rate"),
-        showlegend = TRUE,
-        legend = list(title = "Subject", traceorder = "normal"))
+    p <- ggplot(filtered_scores, aes(x = Student, y = Score, color = Subject)) +
+      geom_point() +
+      labs(
+        x = "Student",
+        y = "Score") +
+      theme_minimal() +
+      scale_color_brewer(palette = "Set1") +  # Using a color palette suitable for colorblind users
+      facet_wrap(~ Subject, scales = "free_y") +  # Facet by subject
+      guides(color = FALSE)  # Remove legend
     
-    p
+    # Convert ggplot to plotly
+    ggplotly(p, dynamicTicks = TRUE)
   })
   
 }
 
-
-# Run the application
 shinyApp(ui, server)
