@@ -181,11 +181,17 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   total_participants <- nrow(StudentsPerformance_3)
   
+  # Determine which students participated in the test preparation course
+  students_participated <- reactive({
+    StudentsPerformance_3$student_id %in% StudentsPerformance_3$test.preparation.course
+  })
+  
   # Inside server() function
   selected_subject <- reactive(input$subject_dropdown)
   
   StudentsPerformance_3$overall_score <- rowSums(StudentsPerformance_3[, c("math.score", "reading.score", "writing.score")])
   StudentsPerformance_3$pass_fail <- ifelse(StudentsPerformance_3$overall_score >= 150, "Pass", "Fail")
+  
   
   # Initialize shinyjs
   shinyjs::useShinyjs()
@@ -316,8 +322,22 @@ server <- function(input, output, session) {
   all_scores <- data.frame(
     Subject = rep(c("Math", "Reading", "Writing"), each = nrow(StudentsPerformance_3)),
     Score = c(StudentsPerformance_3$math.score, StudentsPerformance_3$reading.score, StudentsPerformance_3$writing.score),
-    Student = rep(1:nrow(StudentsPerformance_3), times = 3)
+    Student = rep(1:nrow(StudentsPerformance_3), times = 3),
+    Preparation = rep(StudentsPerformance_3$test.preparation.course, each = 3)
   )
+  
+  # Function to check if a student participated in preparation course
+  participated_in_prep <- function(student_id) {
+    prep_status <- unique(StudentsPerformance_3$test.preparation.course[student_id])
+    if (prep_status == "completed") {
+      return("completed")
+    } else {
+      return("none")
+    }
+  }
+  
+  # Add column indicating participation in preparation course
+  all_scores$Preparation_Check <- sapply(all_scores$Student, participated_in_prep)
   
   # Render scatter plot
   output$scatter_plot <- renderPlotly({
@@ -349,15 +369,15 @@ server <- function(input, output, session) {
     }
     
     # Create the scatter plot
-    p <- ggplot(filtered_scores, aes(x = Student, y = Score, color = Subject)) +
+    p <- ggplot(filtered_scores, aes(x = Student, y = Score, color = Preparation_Check)) +
       geom_point() +
       labs(
         x = "Student",
         y = "Score") +
       theme_minimal() +
-      scale_color_brewer(palette = "Set1") +  # Using a color palette suitable for colorblind users
       facet_wrap(~ Subject, scales = "free_y") +  # Facet by subject
-      guides(color = FALSE)  # Remove legend
+      guides(color = guide_legend(title = "Preparation Course")) +  # Add legend title
+      scale_color_manual(values = c("completed" = "blue", "none" = "red"))  # Define colo
     
     # Convert ggplot to plotly
     ggplotly(p, dynamicTicks = TRUE)
