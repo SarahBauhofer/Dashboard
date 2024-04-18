@@ -96,14 +96,14 @@ Configurations, interactivity features and layout design.
 
 # All These lead to the final Code: 
 
-#Install and load necessary libraries
+```# Install and load necessary libraries
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load(shiny, shinydashboard, ggplot2, corrplot, reshape2, plotly, DT, shinythemes, shinyjs, shinydashboardPlus, RColorBrewer)
 
-#Read dataset
+# Read dataset
 StudentsPerformance_3 <- read.csv("https://raw.githubusercontent.com/SarahBauhofer/Dashboard/main/StudentsPerformance-3.csv")
 
-#Data preprocessing
+# Data preprocessing
 StudentsPerformance_3 <- StudentsPerformance_3[, !(names(StudentsPerformance_3) %in% c("lunch", "race.ethnicity"))]
 passing_threshold <- 50
 StudentsPerformance_3$math_pass_fail <- ifelse(StudentsPerformance_3$math.score >= passing_threshold, "Pass", "Fail")
@@ -114,9 +114,9 @@ avg_scores <- aggregate(cbind(math.score, reading.score, writing.score) ~ test.p
                         data = StudentsPerformance_3, FUN = function(x) round(mean(x, na.rm = TRUE), 2))
 colnames(avg_scores) <- c("Test Preparation Course", "Math", "Reading", "Writing")
 avg_scores_long <- reshape2::melt(avg_scores, id.vars = "Test Preparation Course", variable.name = "Subject", value.name = "Average Score")
+´´´
 
-
-#Define UI
+# Define UI
 ui <- fluidPage(
   titlePanel(
     div(
