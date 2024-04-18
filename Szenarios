@@ -1,0 +1,23 @@
+# Szenario
+Als Bildungskoordinator haben Sie die Aufgabe, die Wirksamkeit von Testvorbereitungs-kursen im Hinblick auf die Verbesserung der Leistungen der Schüler zu bewerten. Verwenden Sie das Dashboard, um die akademischen Ergebnisse von Schülern, die den Testvorbereitungskurs absolviert haben, mit denen zu vergleichen, die ihn nicht besucht haben.
+
+# Szenarien der einzelnen Visualisierungen für Usability Test
+Key Performance Indicators (KPIs):
+•	Szenario: Sie möchten die Gesamtzahl der Teilnehmer an Testvorbereitungskursen überprüfen, um die Beteiligungsrate zu verstehen.
+-	Aktion: Der Benutzer aktiviert die Option "Show KPIs" und überprüft die Anzahl der Gesamtteilnehmer im Dashboard.
+
+Overview - Durchschnittliche Scores:
+•	Szenario: Sie möchten die durchschnittlichen Scores in verschiedenen Fächern vergleichen, um zu sehen, ob sich die Teilnahme an Testvorbereitungskursen auf die Leistung auswirkt.
+-	Aktion: Der Benutzer wählt ein bestimmtes Fach aus dem Dropdown-Menü aus und überprüft die durchschnittlichen Punktzahlen für Schüler, die den Testvorbereitungskurs absolviert haben, im Vergleich zu denen, die es nicht getan haben.
+
+Testvorbereitungs-Bar-Charts:
+•	Szenario: Sie möchten mögliche Auswirkungen der elterlichen Bildung auf die Schü-lerleistungen überprüfen. Analysieren Sie die Misserfolgsquote in den Bereichen Mathematik, Lesen und Schreiben auf der Grundlage der verschiedenen Bildungsniveaus der Eltern.
+-	Aktion: Der Benutzer wählt ein Fach und ein Bildungsniveau aus dem Dropdown-Menü aus und betrachtet die Balkendiagramme, um zu sehen, wie sich die Beste-hensrate für Schüler mit und ohne Abschluss des Testvorbereitungskurses unterscheidet.
+
+Streuungsdiagramm - Scores der einzelnen Schüler:
+•	Szenario: Sie möchten die Verteilung der Schülerpunktzahlen in einem bestimmten Fach anzeigen und sehen, ob es eine Tendenz gibt, dass Schüler mit Teilnahme am Testvorbereitungskurs höhere Scores erzielen.
+-	Aktion: Der Benutzer wählt ein Fach aus dem Dropdown-Menü aus und betrachtet das Streudiagramm, um die Verteilung der Punktzahlen zu sehen und festzustellen, ob es eine Korrelation zwischen dem Abschluss des Testvorbereitungskurses und hö-heren Punktzahlen gibt.
+
+Identifizierung von Ausreißern:
+•	Szenario: Sie möchten Ausreißer in den Scores der Schüler identifizieren, um gezielt Unterstützung anzubieten.
+-	Aktion: Der Benutzer betrachtet das Streudiagramm und identifiziert Schüler mit un-gewöhnlich niedrigen oder hohen Punktzahlen, um ihre Leistung genauer zu untersuchen.
