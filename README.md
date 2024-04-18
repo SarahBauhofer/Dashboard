@@ -93,6 +93,9 @@ Configurations, interactivity features and layout design.
 - Sometimes the entire layout gets blown away or presets don't allow the colors to be changed
 - You can tell ChatGPT what is important to you when designing (e.g. color blindness)
 - It is possible to add images, icons or emojis
+  
+# Conclusion
+ChatGPT can be a useful aid for idea and code generation. However, you will never be able to achieve your perfect goal(s) with ChatGPT alone.
 
 # All These lead to the final Code: 
 
@@ -114,7 +117,7 @@ avg_scores <- aggregate(cbind(math.score, reading.score, writing.score) ~ test.p
                         data = StudentsPerformance_3, FUN = function(x) round(mean(x, na.rm = TRUE), 2))
 colnames(avg_scores) <- c("Test Preparation Course", "Math", "Reading", "Writing")
 avg_scores_long <- reshape2::melt(avg_scores, id.vars = "Test Preparation Course", variable.name = "Subject", value.name = "Average Score")
-´´´
+
 
 # Define UI
 ui <- fluidPage(
@@ -275,7 +278,7 @@ ui <- fluidPage(
 )
 
 
-#Define server logic
+# Define server logic
 server <- function(input, output, session) {
   total_participants <- nrow(StudentsPerformance_3)
   
@@ -284,7 +287,7 @@ server <- function(input, output, session) {
     StudentsPerformance_3$student_id %in% StudentsPerformance_3$test.preparation.course
   })
   
-  #Inside server() function
+  # Inside server() function
   selected_subject <- reactive(input$subject_dropdown)
   
   StudentsPerformance_3$overall_score <- rowSums(StudentsPerformance_3[, c("math.score", "reading.score", "writing.score")])
@@ -305,7 +308,7 @@ server <- function(input, output, session) {
     }
   ")
   
-  #Section 1: Key Performance Indicators (KPIs)
+  # Section 1: Key Performance Indicators (KPIs)
   output$total_participants_text <- renderText({
     paste(total_participants)
   })
@@ -335,14 +338,14 @@ server <- function(input, output, session) {
     preparation_course_fail_count()
   })
   
-  #Passing Students Count who participated in the preparation course
+  # Passing Students Count who participated in the preparation course
   output$passing_students_count_text <- renderText({
     passing_students_count <- sum(StudentsPerformance_3$pass_fail == "Pass" & StudentsPerformance_3$test.preparation.course == "completed")
     paste(passing_students_count)
   })
   
   
-  #Section 2: Overview
+  # Section 2: Overview
   output$average_scores_table <- renderDT({
     if (input$subject_dropdown == "All") {
       datatable(avg_scores, 
@@ -358,8 +361,8 @@ server <- function(input, output, session) {
     }
   })
   
-  #Section 3: Test Preparation Bar Charts 
-  #Function to render test preparation bar chart for a specific subject and education level
+  # Section 3: Test Preparation Bar Charts 
+  # Function to render test preparation bar chart for a specific subject and education level
   render_test_prep_bar_chart <- function(selected_subject, selected_education) {
     pass_fail_data <- table(StudentsPerformance_3$test.preparation.course,
                             StudentsPerformance_3[[paste0(tolower(selected_subject), "_pass_fail")]],
@@ -390,7 +393,7 @@ server <- function(input, output, session) {
     ggplotly(p, tooltip = "text")
   }
   
-  #Render Math test preparation bar chart
+  # Render Math test preparation bar chart
   output$bar_chart_test_prep_math <- renderPlotly({
     if (selected_subject() %in% c("All", "Math")) {
       shinyjs::addClass(selector = "subject_dropdown", class = "fade-in")
@@ -398,7 +401,7 @@ server <- function(input, output, session) {
     }
   })
   
-  #Render Reading test preparation bar chart
+  # Render Reading test preparation bar chart
   output$bar_chart_test_prep_reading <- renderPlotly({
     if (selected_subject() %in% c("All", "Reading")) {
       shinyjs::addClass(selector = "subject_dropdown", class = "fade-in")
@@ -406,7 +409,7 @@ server <- function(input, output, session) {
     }
   })
   
-  #Render Writing test preparation bar chart
+  # Render Writing test preparation bar chart
   output$bar_chart_test_prep_writing <- renderPlotly({
     if (selected_subject() %in% c("All", "Writing")) {
       shinyjs::addClass(selector = "subject_dropdown", class = "fade-in")
@@ -415,8 +418,8 @@ server <- function(input, output, session) {
   })
   
   
-  #Section 4: Scatter Plot (Continued)
-  #Combine all individual scores into one dataset
+  # Section 4: Scatter Plot (Continued)
+  # Combine all individual scores into one dataset
   all_scores <- data.frame(
     Subject = rep(c("Math", "Reading", "Writing"), each = nrow(StudentsPerformance_3)),
     Score = c(StudentsPerformance_3$math.score, StudentsPerformance_3$reading.score, StudentsPerformance_3$writing.score),
@@ -424,7 +427,7 @@ server <- function(input, output, session) {
     Preparation = rep(StudentsPerformance_3$test.preparation.course, each = 3)
   )
   
-  #Function to check if a student participated in preparation course
+  # Function to check if a student participated in preparation course
   participated_in_prep <- function(student_id) {
     prep_status <- unique(StudentsPerformance_3$test.preparation.course[student_id])
     if (prep_status == "completed") {
@@ -434,10 +437,10 @@ server <- function(input, output, session) {
     }
   }
   
-  #Add column indicating participation in preparation course
+  # Add column indicating participation in preparation course
   all_scores$Preparation_Check <- sapply(all_scores$Student, participated_in_prep)
   
-  #Render scatter plot
+  # Render scatter plot
   output$scatter_plot <- renderPlotly({
     # Define data based on selected subject
     if (input$subject_dropdown == "All") {
@@ -446,7 +449,7 @@ server <- function(input, output, session) {
       filtered_scores <- all_scores[all_scores$Subject == input$subject_dropdown, ]
     }
     
-    #Apply clustering based on selected criterion
+    # Apply clustering based on selected criterion
     if (!is.null(input$cluster_dropdown)) {
       switch(input$cluster_dropdown,
              "Top 25%" = {
@@ -466,7 +469,7 @@ server <- function(input, output, session) {
       )
     }
     
-    #Create the scatter plot
+    # Create the scatter plot
     p <- ggplot(filtered_scores, aes(x = Student, y = Score, color = Preparation_Check)) +
       geom_point() +
       labs(
@@ -482,8 +485,7 @@ server <- function(input, output, session) {
   })
   
 }
-#Run Application
+# Run Application
 shinyApp(ui, server)
 
-# Conclusion
-ChatGPT can be a useful aid for idea and code generation. However, you will never be able to achieve your perfect goal(s) with ChatGPT alone.
+
