@@ -93,6 +93,10 @@ lot of patience though and you constantly have to keep an eye to the generated c
 - Sometimes the entire layout gets blown away or presets don't allow the colors to be changed
 - You can tell ChatGPT what is important to you when designing (e.g. color blindness)
 - It is possible to add images, icons or emojis
+
+# Scenario and Task Analysis
+To test the usability of the Dashboard, created with ChatGPT, it was important to create Tasks and Scenarios (https://github.com/SarahBauhofer/Dashboard/blob/7c0f578df4a0b04407a78bc8aa4aaeefa95c561d/Szenarios). 
+Because the usability test was carried out in Germany, the scenarios are in German. An English translation is also listed.
   
 # Conclusion
 ChatGPT can be a useful aid for idea and code generation. However, you will never be able to achieve your perfect goal(s) with ChatGPT alone.
