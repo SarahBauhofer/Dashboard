@@ -4,7 +4,7 @@ The task here was to let ChatGPT create a Dashboard and document the process wit
 # Requirements
 - R-Studio
 - ChatGPT 3.5
-- Dataset (Studentsperformance)
+- Dataset (StudentsPerformance-3.csv)
 - Shiny
 
 # Get Started 
