@@ -34,8 +34,8 @@ A prompt might look like this: You are a teacher…. You have this data set (dat
 Configurations, interactivity features and layout design.
 
 # Work with ChatGPT
-- If you tell ChatGPT that you want to create a dashboard with R, he can immediately list different ways to make it happen. ChatGPT even has access to R data sets that you can use to create a dashboard. So it's not even necessary to try to upload a data set. You need a 
-  lot of patience though and you constantly have to keep an eye to the generated code. Here are some points that are already known in working with ChatGPT: 
+If you tell ChatGPT that you want to create a dashboard with R, he can immediately list different ways to make it happen. ChatGPT even has access to R data sets that you can use to create a dashboard. So it's not even necessary to try to upload a data set. You need a 
+lot of patience though and you constantly have to keep an eye to the generated code. Here are some points that are already known in working with ChatGPT: 
 - Pay attention to word choice
 - Short and precise expression. Tackle problems step by step, not all at once
 - You have to have knowledge in order to be able to correct mistakes yourself
