@@ -2,6 +2,7 @@
 Als Bildungskoordinator haben Sie die Aufgabe, die Wirksamkeit von Testvorbereitungs-kursen im Hinblick auf die Verbesserung der Leistungen der Schüler zu bewerten. Verwenden Sie das Dashboard, um die akademischen Ergebnisse von Schülern, die den Testvorbereitungskurs absolviert haben, mit denen zu vergleichen, die ihn nicht besucht haben.
 
 # Szenarien der einzelnen Visualisierungen für Usability Test
+
 Key Performance Indicators (KPIs):
 •	Szenario: Sie möchten die Gesamtzahl der Teilnehmer an Testvorbereitungskursen überprüfen, um die Beteiligungsrate zu verstehen. Notieren Sie Ihr Vorgehen Stichpunktartig.
 -	Aktion: Der Benutzer aktiviert die Option "Show KPIs" und überprüft die Anzahl der Gesamtteilnehmer im Dashboard.
