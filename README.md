@@ -12,7 +12,7 @@ The task here was to let ChatGPT create a Dashboard and document the process wit
 - Create a new Project
 - Convert Dataset to .csv
 - Upload Dataset in R Studio
-- Open ChatGPT 3.5
+- Open and register for ChatGPT 3.5 
 
 # About the Dataset
 Student performance. This data set contains information about 1000 students about the points achieved in various tests (math, writing, reading). It is not clear which group of students (student, primary school, secondary school) this is. Various influencing factors are included in the data set. Demographic data (gender, ethnicity, parental education level), lunch and participation in the test preparation course. 
