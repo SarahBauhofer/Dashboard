@@ -1,4 +1,4 @@
-# Szenario
+# Szenario (German Version) 
 Als Bildungskoordinator haben Sie die Aufgabe, die Wirksamkeit von Testvorbereitungs-kursen im Hinblick auf die Verbesserung der Leistungen der Schüler zu bewerten. Verwenden Sie das Dashboard, um die akademischen Ergebnisse von Schülern, die den Testvorbereitungskurs absolviert haben, mit denen zu vergleichen, die ihn nicht besucht haben.
 
 # Szenarien der einzelnen Visualisierungen für Usability Test
@@ -22,3 +22,29 @@ Streuungsdiagramm - Scores der einzelnen Schüler:
 Identifizierung von Ausreißern:
 •	Szenario: Sie möchten Ausreißer in den Scores der Schüler identizieren, um gezielt Unterstützung anzubieten. Bitte schreiben Sie Stichpunktartig auf, wie Sie die Ausreißer ermitteln würden.
 -	Aktion: Der Benutzer betrachtet das Streudiagramm und identifiziert Schüler mit un-gewöhnlich niedrigen oder hohen Punktzahlen, um ihre Leistung genauer zu untersuchen.
+
+# Scenario (English Version)
+As an education coordinator, you are tasked with evaluating the effectiveness of test prep courses in improving student achievement. Use the dashboard to compare the academic results of students who have taken the test prep course with those who have not.
+
+# Scenarios of the individual visualizations for usability test
+
+Key Performance Indicators (KPIs):
+• Scenario: You want to review the total number of test prep course attendees to understand the participation rate. Note down your procedure in bullet points.
+- Action: The user activates the "Show KPIs" option and checks the number of total participants in the dashboard.
+
+Overview - Average scores:
+• Scenario: You want to display the distribution of scores in a particular subject and see if there is a tendency for students to achieve higher scores with participation in the test preparation course. Please write down your procedure in bullet points
+- Action: The user selects a specific subject from the drop-down menu and reviews the average scores for students who have taken the test prep course compared to those who have not.
+
+Test preparation bar charts:
+• Scenario: You want to examine possible effects of parental education on student performance. Analyze the failure rate in math, reading and writing based on the different educational levels of the parents.
+- Action: The user selects a subject and education level from the drop-down menu and views the bar graphs to see how the pass rate differs for students who have and have not completed the test prep course.
+
+Scatter plot - scores of individual students:
+• Scenario: You want to view the distribution of student scores in a particular subject and see if there is a tendency for students with test prep course participation to achieve higher scores.
+- Action: The user selects a subject from the drop-down menu and views the scatter plot to see the distribution of scores and determine if there is a correlation between test prep course completion and higher scores.
+
+Identifying outliers:
+• Scenario: You want to identify outliers in students' scores in order to provide targeted support. Please write down in bullet points how you would identify the outliers.
+- Action: The user looks at the scatter plot and identifies students with unusually low or high scores to investigate their performance in more detail.
+
