@@ -3,11 +3,11 @@ Als Bildungskoordinator haben Sie die Aufgabe, die Wirksamkeit von Testvorbereit
 
 # Szenarien der einzelnen Visualisierungen für Usability Test
 Key Performance Indicators (KPIs):
-•	Szenario: Sie möchten die Gesamtzahl der Teilnehmer an Testvorbereitungskursen überprüfen, um die Beteiligungsrate zu verstehen.
+•	Szenario: Sie möchten die Gesamtzahl der Teilnehmer an Testvorbereitungskursen überprüfen, um die Beteiligungsrate zu verstehen. Notieren Sie Ihr Vorgehen Stichpunktartig.
 -	Aktion: Der Benutzer aktiviert die Option "Show KPIs" und überprüft die Anzahl der Gesamtteilnehmer im Dashboard.
 
 Overview - Durchschnittliche Scores:
-•	Szenario: Sie möchten die durchschnittlichen Scores in verschiedenen Fächern vergleichen, um zu sehen, ob sich die Teilnahme an Testvorbereitungskursen auf die Leistung auswirkt.
+•	Szenario: Sie möchten die Verteilung der Scores in einem bestimmten Fach anzeigen und sehen, ob es eine Tendenz gibt, dass Schüler mit der Teilnahme am Testvorbereitungskurs höhere Scores erzielen. Bitte schreiben Sie Ihr Vorgehen Stichpunktartig auf
 -	Aktion: Der Benutzer wählt ein bestimmtes Fach aus dem Dropdown-Menü aus und überprüft die durchschnittlichen Punktzahlen für Schüler, die den Testvorbereitungskurs absolviert haben, im Vergleich zu denen, die es nicht getan haben.
 
 Testvorbereitungs-Bar-Charts:
@@ -19,5 +19,5 @@ Streuungsdiagramm - Scores der einzelnen Schüler:
 -	Aktion: Der Benutzer wählt ein Fach aus dem Dropdown-Menü aus und betrachtet das Streudiagramm, um die Verteilung der Punktzahlen zu sehen und festzustellen, ob es eine Korrelation zwischen dem Abschluss des Testvorbereitungskurses und hö-heren Punktzahlen gibt.
 
 Identifizierung von Ausreißern:
-•	Szenario: Sie möchten Ausreißer in den Scores der Schüler identifizieren, um gezielt Unterstützung anzubieten.
+•	Szenario: Sie möchten Ausreißer in den Scores der Schüler identizieren, um gezielt Unterstützung anzubieten. Bitte schreiben Sie Stichpunktartig auf, wie Sie die Ausreißer ermitteln würden.
 -	Aktion: Der Benutzer betrachtet das Streudiagramm und identifiziert Schüler mit un-gewöhnlich niedrigen oder hohen Punktzahlen, um ihre Leistung genauer zu untersuchen.
