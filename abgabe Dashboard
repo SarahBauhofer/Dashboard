@@ -337,7 +337,7 @@ server <- function(input, output, session) {
   }
   
   # Add column indicating participation in preparation course
-  all_scores$Preparation_Check <- sapply(all_scores$Student, participated_in_prep)
+  all_scores$preparation_check <- sapply(all_scores$Student, participated_in_prep)
   
   # Render scatter plot
   output$scatter_plot <- renderPlotly({
@@ -369,7 +369,7 @@ server <- function(input, output, session) {
     }
     
     # Create the scatter plot
-    p <- ggplot(filtered_scores, aes(x = Student, y = Score, color = Preparation_Check)) +
+    p <- ggplot(filtered_scores, aes(x = Student, y = Score, color = preparation_check)) +
       geom_point() +
       labs(
         x = "Student",
@@ -377,7 +377,7 @@ server <- function(input, output, session) {
       theme_minimal() +
       facet_wrap(~ Subject, scales = "free_y") +  # Facet by subject
       guides(color = guide_legend(title = "Preparation Course")) +  # Add legend title
-      scale_color_manual(values = c("completed" = "blue", "none" = "red"))  # Define colo
+      scale_color_manual(values = c("completed" = "blue", "none" = "red"))  # Define colors
     
     # Convert ggplot to plotly
     ggplotly(p, dynamicTicks = TRUE)
