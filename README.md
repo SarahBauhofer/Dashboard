@@ -95,7 +95,7 @@ lot of patience though and you constantly have to keep an eye to the generated c
 - It is possible to add images, icons or emojis
 
 # Scenario and Task Analysis
-To test the usability of the Dashboard, created with ChatGPT, it was important to create Tasks and Scenarios [(https://github.com/SarahBauhofer/Dashboard/blob/7c0f578df4a0b04407a78bc8aa4aaeefa95c561d/Szenarios)](https://github.com/SarahBauhofer/Dashboard/blob/4db1fba0c91741d0865aca09df5fc2d53097f4e5/Szenarios). 
+To test the usability of the Dashboard, created with ChatGPT, it was important to create Tasks and Scenarios [(Szenarios)](https://github.com/SarahBauhofer/Dashboard/blob/4db1fba0c91741d0865aca09df5fc2d53097f4e5/Szenarios)
 Because the usability test was carried out in Germany, the scenarios are in German. An English translation is also listed.
   
 # Conclusion
