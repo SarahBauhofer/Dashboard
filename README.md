@@ -15,7 +15,7 @@ The task here was to let ChatGPT create a Dashboard and document the process wit
 - Open ChatGPT 3.5
 
 # About the Dataset
-Student performance. This data set contains information about 1000 students about the points achieved in various tests (math, writing, reading). It is not clear which group of students (student, primary school, secondary school) this is. Various influencing factors are included in the data set. Demographic data (gender, ethnicity, parental education level), lunch and participation in the test preparation course. The data set can be found on Kaggle.
+Student performance. This data set contains information about 1000 students about the points achieved in various tests (math, writing, reading). It is not clear which group of students (student, primary school, secondary school) this is. Various influencing factors are included in the data set. Demographic data (gender, ethnicity, parental education level), lunch and participation in the test preparation course. 
 
 # Data Analysis 
 The data set is well structured and structured. Data cleaning (searching for duplicates or outliers) was nevertheless carried out. In addition, the influencing factors lunch and ethnicity were not taken into account when creating the dashboard because, on the one hand, they were not suitable for the selected scenario and, on the other hand, the ethnicity was not justifiable for use.
