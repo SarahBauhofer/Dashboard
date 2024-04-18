@@ -59,6 +59,7 @@ lot of patience though and you constantly have to keep an eye to the generated c
 - You also have to pay close attention to what he changes and where, because he forgets parts of the code or changes the order of the code logic
 - Sometimes it's a bit of tinkering if only certain sections of the code need to be changed or adjusted
 - Sometimes the desired goals compete with Shiny's presets (red bars, layout dashboard)
+- If you correct anything in the code, it is important to copy the code to ChatGPT. Otherwise, it will always generate the code without your corrections
 
 # The Work with R-Studio
 - Crashed often
