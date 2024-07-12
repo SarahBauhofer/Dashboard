@@ -1,5 +1,5 @@
-# Create a Dashboard with ChatGPT
-The task here was to let ChatGPT create a Dashboard and document the process with opportunities and obstacles of the work with ChatGPT. For this purpose, a data set was used that was to be visualized on a dashboard. The challenge was to find out if and how ChatGPT could work with visualizations. 
+# Create a Dashboard with ChatGPT 3.5
+The task here was to let ChatGPT 3.5 create a Dashboard and document the process with opportunities and obstacles of the work with ChatGPT 3.5. For this purpose, a data set was used that was to be visualized on a dashboard. The challenge was to find out if and how ChatGPT could work with visualizations. 
 
 # Requirements
 - R-Studio
@@ -24,83 +24,84 @@ The dataset is well structured. Data cleaning (searching for duplicates or outli
 sometines ist was eaiser to work with ChatGPT if the Datastructure was sent. Therefor the Datastructure is listet: (Listening on http://127.0.0.1:7376) Unique values for math.score: 72 69 90 47 76 71 88 40 64 38 58 65 78 50 18 46 54 66 44 74 73 67 70 62 63 56 97 81 75 57 55 53 59 82 77 33 52 0 79 39 45 60 61 41 49 30 80 42 27 43 68 85 98 87 51 99 84 91 83 89 22 100 96 94 48 35 34 86 92 37 28 24 26 95 36 29 32 93 19 23 8 Unique values for reading.score: 72 90 95 57 78 83 43 64 60 54 52 81 53 75 89 32 42 58 69 73 71 74 70 65 87 56 61 84 55 44 41 85 59 17 39 80 37 63 51 49 26 68 45 47 86 34 79 66 67 91 100 76 77 82 92 93 62 88 50 28 48 46 23 38 94 97 99 31 96 24 29 40 Unique values for writing.score: 74 88 93 44 75 78 92 39 67 50 52 43 73 70 58 86 28 46 61 63 53 80 72 55 65 38 82 79 83 59 57 54 68 66 62 76 48 42 87 49 10 34 71 37 56 41 22 81 45 36 89 47 90 100 64 98 51 40 84 69 33 60 85 91 77 27 94 95 19 35 32 96 97 99 15 30 23 Unique values for test.preparation.course: none completed 
 str(StudentsPerformance_3) command: [1] "gender" "parental.level.of.education" "test.preparation.course" [4] "math.score" "reading.score" "writing.score" [1] "gender" "parental.level.of.education" "test.preparation.course" [4] "math.score" "reading.score" "writing.score" 'data.frame': 1000 obs. of 8 variables: $ gender : chr "female" "female" "female" "male" ... $ race.ethnicity : chr "group B" "group C" "group B" "group A" ... $ pa-rental.level.of.education: chr "bachelor's degree" "some college" "master's degree" "associate's degree" ... $ lunch : chr "standard" "standard" "standard" "free/reduced" ... $ test.preparation.course : chr "none" "completed" "none" "none" ... $ math.score : int 72 69 90 47 76 71 88 40 64 38 ... $ reading.score : int 72 90 95 57 78 83 95 43 64 60 ... $ writing.score : int 74 88 93 44 75 78 92 39 67 50 ...
 
-# First impressions of working with ChatGPT (testing around)
+# First impressions of working with ChatGPT 3.5 (testing around)
 In the beginning, there was a lot of testing and creating various visualizations, questions, scenarios and dashboards.
-ChatGPT can help to suggest research questions, scenarios and suitable visualizations for these questions based on the data structure. For example, he can use the data set to create suitable connections, calculate them and suggest a visualization for connections. However, the other way around it is also possible to say, I want to establish a connection between x and y using a specific visualization. Shiny also offers examples of visualizations that can be copied. ChatGPT is then able to adapt the code (with a lot of patience).
+ChatGPT 3.5 can help to suggest scenarios and suitable visualizations based on the data structure. For example, it can use the data set to create suitable connections, calculate them and suggest a visualization for connections. However, the other way around it is also possible to say, I want to establish a connection between x and y using a specific visualization. Shiny also offers examples of visualizations that can be copied. ChatGPT 3.5 is then able to adapt the code (with a lot of patience).
 
 # Prompting 
 To achieve my goals the prompting was very important. The commands had to be tried out and generated. The commands usually included a description of the situation, a description of the troubleshooting or a description of the plan/goal.
-A prompt might look like this: You are a teacher…. You have this data set (data structure). You want to use this visualization. Please create a suitable scaling for this visualization. In summary, the commands had to be specified so that details about visualizations could be described. This included data mapping, diagram typologies, stylistics
-Configurations, interactivity features and layout design.
+A prompt might look like this: You are a teacher…. You have this data set (data structure). You want to use this visualization. Please create a suitable scaling for this visualization. In summary, the commands had to be specified so that details about visualizations could be described. This included data mapping, diagram typologies, stylistics, Configurations, interactivity features and layout design.
 
-# Work with ChatGPT
-If you tell ChatGPT that you want to create a dashboard with R, he can immediately list different ways to make it happen. ChatGPT even has access to R data sets that you can use to create a dashboard. So it's not even necessary to try to upload a data set. You need a 
+# Work with ChatGPT 3.5
+If you tell ChatGPT 3.5 that you want to create a dashboard with R, he can immediately list different ways to make it happen. ChatGPT 3.5 even has access to R data sets that you can use to create a dashboard. So it's not even necessary to upload a data set. You need a 
 lot of patience though and you constantly have to keep an eye to the generated code. Here are some points that are already known in working with ChatGPT: 
 - Pay attention to word choice
 - Short and precise expression. Tackle problems step by step, not all at once
 - You have to have knowledge in order to be able to correct mistakes yourself
-- It helps to generate ideas, for example with the research question or with adding interactions that are possible with the existing visualizations
 - Pay attention to the length of the text, avoid long and convoluted sentences
-- It often helped to simply have him check the code. If I entered the code and he said the code looked right, that was enough
-- If the history is too long, ChatGPT will become slow. This means you often have to open new chats and start a new conversation. This can lead to him coming up with new ideas that improve the code. But it also takes time to constantly have to explain what you are 
+- It often helped to simply have him check the code. 
+- If the history is too long, ChatGPT 3.5 will become slow. This means you often have to open new chats and start a new conversation. This can lead to him coming up with new ideas that improve the code. But it also takes time to constantly have to explain what you are 
   trying to achieve
-- It is often helpful that he starts coding straight away, but sometimes it is also annoying when you try to explain something to him. For example, if you explicitly tell him to wait or NOT to code, he still starts coding straight away.
+- It is often helpful that it starts coding straight away, but sometimes it is also annoying when you try to explain something to him. For example, if you explicitly tell him to wait or NOT to code, he still starts coding straight away.
 - Has difficulty processing large data sets (scores of all students)
 
-# The Work with ChatGPT and Coding
-- Sometimes he doesn't understand exactly what you want. For example, you tell him to remove the “_” between words. It generates the code, but the _ are still visible.
-- There were problems creating a table with gender, score and subject because gender has 2 variables and the other 3 variables. He wasn't able to adjust it.
-- If you made small changes in the code, you had to remember them or always send ChatGPT the current code so that no “old” lines of your code would continue to be edited (e.g. if lines were swapped, or the number of columns has been changed, or if a text output has 
+# The Work with ChatGPT 3.5 and Coding
+- Sometimes it doesn't understand exactly what you want. For example, you want it to remove the “_” between words. It generates the code, but the _ are still visible.
+- There were problems creating a table with gender, score and subject because gender has 2 variables and the other 3 variables. Tt wasn't able to adjust it.
+- If you made small changes in the code, you had to remember them or always send ChatGPT 3.5 the current code so that no “old” lines of your code would continue to be edited (e.g. if lines were swapped, or the number of columns has been changed, or if a text output has 
   been changed.
-- He sometimes has problems generating errors. You then have to recognize for yourself where the error lies and explicitly tell ChatGPT what the problem is and what you want as a solution (e.g. send the line in the code in which the error must lie, point out to him 
+- It sometimes has problems generating errors. You then have to recognize for yourself where the error lies and explicitly tell ChatGPT 3.5 what the problem is and what you want as a solution (e.g. send the line in the code in which the error must lie, point out
   that the structure of the codes doesn't make sense)
-- Sometimes less would be more. Often it outputs all the code, takes a lot of time and then something is wrong. In some places it would make more sense if he would change the codes on the corresponding lines
-- Be careful not to create too many codes or bug fixes in a chat history. This confuses ChatGPT
-- You also have to pay close attention to what he changes and where, because he forgets parts of the code or changes the order of the code logic
+- Sometimes less would be more. Often it outputs all the code, takes a lot of time and then something is wrong. In some places it would make more sense if it would change the codes on the corresponding lines
+- Be careful not to create too many codes or bug fixes in a chat history. This confuses ChatGPT 3.5
+- You also have to pay close attention to what it changes and where, because it forgets parts of the code or changes the order of the code logic
 - Sometimes it's a bit of tinkering if only certain sections of the code need to be changed or adjusted
 - Sometimes the desired goals compete with Shiny's presets (red bars, layout dashboard)
-- If you correct anything in the code, it is important to copy the code to ChatGPT. Otherwise, it will always generate the code without your corrections
+- If you correct anything in the code, it is important to copy the code to ChatGPT 3.5. Otherwise, it will always generate the code without your corrections
 
 # The Work with R-Studio
 - Crashed often
 - Initial problems uploading the dataset. I had to experiment several times until the .csv file format was recognized correctly and the variables were processed correctly.
 - You can work with the data set within R, which helped with calculations
 - I was unable to remove columns from dataset in R (ethnicity, lunch)
-- Practical that several folders can be attached with Shinyapp, so you can test, compare and edit different versions
+- Practical that several folders can be attached with ShinyApp, so you can test, compare and edit different versions
 
-# The Work with ChatGPT and R-Studio
-- You can paste the complete R Console error message into ChatGPT. He recognizes the problem and generates the code. However, if the same error message keeps coming, he sometimes gets into a loop and always writes the same codes that are supposed to help solve the 
-  error. If you don't recognize that, you'll be stuck there forever. You can't ask him about it either, so he doesn't realize how often or that he's using the same code over and over again
-- He cannot access links or templates. So you cannot format the dashboard according to a template
-- No access to templates or codes from other Github codes (you have to copy and search for them yourself)
-- You can say what you want to visualize, he then gives suggestions and codes the whole thing
-- The update of ChatGPT must match the current versions of the programs. In some cases he used packages from Shiny that are not compatible with the current version of R.
-- He doesn't have access to data sets and can't upload them, but you can send the data structure to the chat and he can work with it.
+# The Work with ChatGPT 3.5 and R-Studio
+- You can paste the complete R Console error message into ChatGPT. It recognizes the problem and generates the code. However, if the same error message keeps coming, it sometimes gets into a loop and always writes the same codes that are supposed to help solve the 
+  error. If you don't recognize that, you'll be stuck there forever. You can't ask about it either, so it doesn't realize how often or that it´s using the same code over and over again
+- It cannot access links or templates. So you cannot format the dashboard according to a template
+- You can say what you want to visualize, it then gives suggestions and codes the whole thing
+- The update of ChatGPT 3.5 must match the current versions of the programs. In some cases it used packages from Shiny that are not compatible with the current version of R.
+- It doesn't have access to data sets and can't upload them, but you can send the data structure to the chat and he can work with it.
 
-# The Work with ChatGPT and the Dataset
-- The data set is easy to work with, with Chat GPT the data set can also be changed, e.g. removing columns that I don't want to edit in the data set
+# The Work with ChatGPT 3.5 and the Dataset
+- The data set is easy to work with, with ChatGPT 3.5 the data set can also be changed, e.g. removing columns that I don't want to edit in the data set
 - The data set is rather static and not particularly suitable for showing developments, for example, so visualizations that show developments or filters with time options are not possible.
-- ChatGPT is not able to translate the data record into another language. The variables are no longer recognized either.
+- ChatGPT 3.5 is not able to translate the data record into another language. The variables are no longer recognized either.
 
-# ChatGPT and Interactions in the Dashboard
-- ChatGPT can use various interactions from Shiny
+# ChatGPT 3.5 and Interactions in the Dashboard
+- ChatGPT 3.5 can use various interactions from Shiny
 - It is detailed work and very time-consuming to adapt the interactions as desired
 - It is important to recognize where which interaction makes sense
 - However, some interactions did not work: - creating customizability through control menus (e.g. color, font size), -removing or elaborating the tooltip interactions in the visualizations, -automatic adjustments to the visualizations, changing the code as a responsive 
   design, without calculations change or existing theme
+- It helps to generate ideas, for example with adding interactions that are possible with the existing visualizations
 
-# ChatGPT and Formatting the Dashboard
-- ChatGPT is able to use different color codes and palettes
+# ChatGPT 3.5 and Formatting the Dashboard
+- ChatGPT 3.5 is able to use different color codes and palettes
 - Sometimes the entire layout gets blown away or presets don't allow the colors to be changed
-- You can tell ChatGPT what is important to you when designing (e.g. color blindness)
+- You can tell ChatGPT 3.5 what is important to you when designing (e.g. color blindness)
 - It is possible to add images, icons or emojis
 
 # Scenario and Task Analysis
-To test the usability of the Dashboard, created with ChatGPT, it was important to create Tasks and Scenarios [(Szenarios)](https://github.com/SarahBauhofer/Dashboard/blob/4db1fba0c91741d0865aca09df5fc2d53097f4e5/Szenarios).
+To test the usability of the Dashboard, created with ChatGPT 3.5, it was important to create Tasks and Scenarios [(Szenarios)](https://github.com/SarahBauhofer/Dashboard/blob/4db1fba0c91741d0865aca09df5fc2d53097f4e5/Szenarios).
 Because the usability test was carried out in Germany, the scenarios are in German. An English translation is also listed.
   
 # Conclusion
-ChatGPT can be a useful aid for idea and code generation. However, you will never be able to achieve your perfect goal(s) with ChatGPT alone.
+ChatGPT 3.5 can be a useful aid for idea and code generation. However, you will never be able to achieve your perfect goal(s) with ChatGPT 3.5 alone.
+
+# Code Structure
+The code is structured like regular ShinyApp code and includes installing all necessary libraries, installing the dataset and making changes to the dataset. This is followed by a fluid page that defines all layouts and the size of the components in the UserInterface (UI) and in the Dashboard Body. The server logic performs all functions for the calculations and interactions.
 
 # All These lead to the final Code: 
 
